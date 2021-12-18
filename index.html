@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vacman Game</title>
+    <link rel="stylesheet" href="./style/style.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css?family=Press+Start+2P:regular" rel="stylesheet" />
+</head>
+<body>
+    <!--Start page-->
+    <div id="start-page">
+        <img id="bg-img" src="./images/background.jpg" alt="background image">
+        <div id="instructions">
+            <h2>Infect every human</h2>
+            <ul>
+                <li>
+                    <i class="fa fa-arrow-up" aria-hidden="true"></i>
+                </li>
+                <li>
+                    <i class="fa fa-arrow-left" aria-hidden="true"></i>
+                    <i class="fa fa-arrow-down" aria-hidden="true"></i>
+                    <i class="fa fa-arrow-right" aria-hidden="true"></i>
+                    Press arrows keys for changing the movement
+                </li>
+                <li>
+                    Choose one of the four available classes
+                </li>
+                <li>
+                    <img src="./images/human.png" alt="Human" height="20">
+                    Infect humans to win
+                </li>
+                <li>
+                    <img src="./images/mutation.png" alt="Mutation" height="20">
+                    Collect mutations to defeat the vaccines
+                </li>
+            </ul>
+            <button class="play-btn">PLAY</button>
+        </div>
+    </div>
+    <!--Game over page-->
+    <div id="game-over-page">
+
+    </div>
+    <!--Winning page-->
+    <div id="win-page">
+
+    </div>
+    <!--Canvas-->
+    <div id="game-board">
+        <canvas id="my-canvas" width="1000" height="700"></canvas>
+    </div>
+    <script type="text/javascript" src="./js/script.js"></script>
+</body>
+</html>

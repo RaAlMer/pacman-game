@@ -1,8 +1,8 @@
-# Pacman
+# Vacman
 
 ## Description
 
-Pacman is a game where the player has to collect some small objects in order to win the game. There will also be four enemies that will try to get the player and kill it. These enemies can be defeated using four special objects that will be in the four corners of the map, when you get one of these objects the enemies become vulnerable to the player. However, the enemies only are defeated during some time, after that they respawn. This time is calculated based on the objects collected. The score is also calculated based on the objects collected and the enemies defeated. The player has three lives to defeat the game.
+Vacman is a game where the player (which can be selected from 4 classes) has to collect some small objects (people) in order to win the game. There will also be four enemies (vaccines) that will try to get the player and kill it. These enemies can be defeated using four special objects (mutations) that will be in the four corners of the map, when you get one of these objects the enemies become vulnerable to the player. However, the enemies only are defeated during some time, after that they respawn. This time is calculated based on the objects collected. The score is also calculated based on the objects collected and the enemies defeated. The player has three lives to defeat the game.
 After this first screen there is a second boss level screen ...
 
 ## MVP (DOM - CANVAS)
