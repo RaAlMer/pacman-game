@@ -5,6 +5,10 @@ let playBtn = document.querySelectorAll('.play-btn');
 //Variables
 let mainPlayer = 0;
 let intervalId = 0;
+let upArrow = false;
+let downArrow = false;
+let leftArrow = false;
+let rightArrow = false;
 //Images
 //Classes
 const virusImg = new Image();
@@ -38,24 +42,22 @@ class Wall {
         this.width = width;
         this.height = height;
         this.color = color;
-    }
+    };
     draw(){
         ctx.lineWidth = 3;
         ctx.strokeStyle = this.color;
         ctx.strokeRect(this.x, this.y, this.width, this.height);
-    }
+    };
 };
 
-class Player {
-    constructor(img, x, y){
+class Collectable {
+    constructor(img, x, y, width, height) {
         this.img = img;
         this.x = x;
         this.y = y;
-        this.width = 40;
-        this.height = 40;
-        this.speedX = 10;
-        this.speedY = 10;
-    }
+        this.width = width;
+        this.height = height;
+    };
     draw(){
         ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
     };
@@ -67,130 +69,364 @@ class Player {
           this.y + this.height > object.y
         );
     };
+};
+
+class Player extends Collectable {
+    constructor(img, x, y){
+        super(img, x, y);
+        this.width = 36;
+        this.height = 36;
+        this.speedX = 4;
+        this.speedY = 4;
+    };
     moveRight(objects) {
         this.x += this.speedX;
         objects.forEach(object => {
             if (this.checkcollision(object)) {
                 this.x -= this.speedX;
-                console.log('collision');
               };
-        })
+        });
       };
-    
     moveLeft(objects) {
         this.x -= this.speedX;
         objects.forEach(object => {
             if (this.checkcollision(object)) {
                 this.x += this.speedX;
-                console.log('collision');
             };
-        })
+        });
     };
-    
     moveUp(objects) {
         this.y -= this.speedY;
         objects.forEach(object => {
             if (this.checkcollision(object)) {
                 this.y += this.speedY;
-                console.log('collision');
             };
-        })
+        });
     };
-    
     moveDown(objects) {
         this.y += this.speedY;
         objects.forEach(object => {
             if (this.checkcollision(object)) {
                 this.y -= this.speedY;
-                console.log('collision');
             };
-        })
+        });
     };
 };
 
-const wallThikness = 10;
+const outerWallThickness = 10;
 const walls = [
     //Outer walls
-    new Wall(40, 3, 920, wallThikness, "blue"),
-    new Wall(40, mycanvas.height - wallThikness - 2, 920, wallThikness, "blue"),
-    new Wall(40, 3, wallThikness, 207, "blue"),
-    new Wall(950, 3, wallThikness, 207, "blue"),
-    new Wall(40, 200, 184, wallThikness, "blue"),
-    new Wall(776, 200, 184, wallThikness, "blue"),
-    new Wall(40, 423, wallThikness, 280, "blue"),
-    new Wall(950, 423, wallThikness, 280, "blue"),
-    new Wall(40, 423, 184, wallThikness, "blue"),
-    new Wall(776, 423, 184, wallThikness, "blue"),
-    new Wall(214, 200, wallThikness, 95, "blue"),
-    new Wall(776, 200, wallThikness, 95, "blue"),
-    new Wall(214, 338, wallThikness, 95, "blue"),
-    new Wall(776, 338, wallThikness, 95, "blue"),
-    new Wall(40, 285, 184, wallThikness, "blue"),
-    new Wall(776, 285, 184, wallThikness, "blue"),
-    new Wall(40, 338, 184, wallThikness, "blue"),
-    new Wall(776, 338, 184, wallThikness, "blue"),
+    new Wall(0, 0, mycanvas.width, outerWallThickness, "blue"),
+    new Wall(0, mycanvas.height - outerWallThickness, mycanvas.width, outerWallThickness, "blue"),
+    new Wall(0, 0, outerWallThickness, 210, "blue"),
+    new Wall(mycanvas.width - outerWallThickness, 0, outerWallThickness, 210, "blue"),
+    new Wall(0, 210 - outerWallThickness, 200, outerWallThickness, "blue"),
+    new Wall(800, 210 - outerWallThickness, 200, outerWallThickness, "blue"),
+    new Wall(0, 420, outerWallThickness, 280, "blue"),
+    new Wall(mycanvas.width - outerWallThickness, 420, outerWallThickness, 280, "blue"),
+    new Wall(0, 420, 200, outerWallThickness, "blue"),
+    new Wall(800, 420, 200, outerWallThickness, "blue"),
+    new Wall(200 - outerWallThickness, 210 - outerWallThickness, outerWallThickness, 90, "blue"),
+    new Wall(800, 210 - outerWallThickness, outerWallThickness, 90, "blue"),
+    new Wall(200 - outerWallThickness, 340, outerWallThickness, 90, "blue"),
+    new Wall(800, 340, outerWallThickness, 90, "blue"),
+    new Wall(0, 280, 200, outerWallThickness, "blue"),
+    new Wall(800, 280, 200, outerWallThickness, "blue"),
+    new Wall(0, 340, 200, outerWallThickness, "blue"),
+    new Wall(800, 340, 200, outerWallThickness, "blue"),
     //Inner walls
-    new Wall(93, 56, 131, 43, "blue"),
-    new Wall(466, 13, 66, 86, "blue"),
-    new Wall(267, 56, 156, 43, "blue"),
-    new Wall(774, 56, 131, 43, "blue"),
-    new Wall(575, 56, 156, 43, "blue"),
-    new Wall(93, 142, 131, 15, "blue"),
-    new Wall(774, 142, 131, 15, "blue"),
-    new Wall(267, 142, 45, 153, "blue"),
-    new Wall(686, 142, 45, 153, "blue"),
-    new Wall(267, 215, 140, 10, "blue"),
-    new Wall(591, 215, 140, 10, "blue"),
-    new Wall(356, 142, 287, 30, "blue"),
-    new Wall(450, 142, 98, 83, "blue"),
-    new Wall(267, 338, 45, 95, "blue"),
-    new Wall(686, 338, 45, 95, "blue"),
-    new Wall(356, 403, 287, 30, "blue"),
-    new Wall(450, 403, 98, 83, "blue"),
-    new Wall(267, 476, 131, 10, "blue"),
-    new Wall(600, 476, 131, 10, "blue"),
-    new Wall(93, 476, 131, 10, "blue"),
-    new Wall(774, 476, 131, 10, "blue"),
-    new Wall(136, 476, 88, 100, "blue"),
-    new Wall(774, 476, 88, 100, "blue"),
-    new Wall(40, 529, 53, 50, "blue"),
-    new Wall(908, 529, 53, 50, "blue"),
-    new Wall(93, 622, 305, 23, "blue"),
-    new Wall(603, 622, 305, 23, "blue"),
-    new Wall(267, 529, 45, 116, "blue"),
-    new Wall(686, 529, 45, 116, "blue"),
-    new Wall(356, 529, 287, 50, "blue"),
-    new Wall(450, 529, 98, 116, "blue"),
-    new Wall(356, 268, 10, 92, "blue"),
-    new Wall(633, 268, 10, 92, "blue"),
-    new Wall(356, 268, 118, 10, "blue"),
-    new Wall(525, 268, 118, 10, "blue"),
-    new Wall(474, 268, 50, 10, "yellow"),
-    new Wall(356, 350, 287, 10, "blue"),
+    new Wall(60, 60, 140, 30, "blue"),
+    new Wall(480, 0, 40, 90, "blue"),
+    new Wall(250, 60, 180, 30, "blue"),
+    new Wall(800, 60, 140, 30, "blue"),
+    new Wall(570, 60, 180, 30, "blue"),
+    new Wall(60, 140, 140, 10, "blue"),
+    new Wall(800, 140, 140, 10, "blue"),
+    new Wall(250, 140, 60, 150, "blue"),
+    new Wall(690, 140, 60, 150, "blue"),
+    new Wall(250, 200, 160, 20, "blue"),
+    new Wall(590, 200, 160, 20, "blue"),
+    new Wall(360, 140, 280, 10, "blue"),
+    new Wall(460, 140, 80, 80, "blue"),
+    new Wall(250, 340, 60, 90, "blue"),
+    new Wall(690, 340, 60, 90, "blue"),
+    new Wall(360, 400, 280, 30, "blue"),
+    new Wall(460, 400, 80, 90, "blue"),
+    new Wall(250, 480, 160, 10, "blue"),
+    new Wall(590, 480, 160, 10, "blue"),
+    new Wall(60, 480, 140, 10, "blue"),
+    new Wall(800, 480, 140, 10, "blue"),
+    new Wall(140, 480, 60, 100, "blue"),
+    new Wall(800, 480, 60, 100, "blue"),
+    new Wall(0, 540, 90, 40, "blue"),
+    new Wall(910, 540, 90, 40, "blue"),
+    new Wall(60, 630, 350, 10, "blue"),
+    new Wall(590, 630, 350, 10, "blue"),
+    new Wall(250, 540, 60, 100, "blue"),
+    new Wall(690, 540, 60, 100, "blue"),
+    new Wall(360, 540, 280, 40, "blue"),
+    new Wall(460, 540, 80, 100, "blue"),
+    new Wall(360, 270, 10, 80, "blue"),
+    new Wall(630, 270, 10, 80, "blue"),
+    new Wall(360, 270, 115, 10, "blue"),
+    new Wall(525, 270, 115, 10, "blue"),
+    new Wall(474, 270, 50, 10, "yellow"),
+    new Wall(360, 340, 280, 10, "blue"),
+];
+const specialCollects = [
+    new Collectable(mutationImg, 20, 60, 30, 30),
+    new Collectable(mutationImg, 950, 60, 30, 30),
+    new Collectable(mutationImg, 20, 500, 30, 30),
+    new Collectable(mutationImg, 950, 500, 30, 30)
+];
+const collects = [
+    new Collectable(humanImg, 30, 22, 15, 20),
+    new Collectable(humanImg, 60, 22, 15, 20),
+    new Collectable(humanImg, 90, 22, 15, 20),
+    new Collectable(humanImg, 120, 22, 15, 20),
+    new Collectable(humanImg, 150, 22, 15, 20),
+    new Collectable(humanImg, 180, 22, 15, 20),
+    new Collectable(humanImg, 210, 22, 15, 20),
+    new Collectable(humanImg, 240, 22, 15, 20),
+    new Collectable(humanImg, 270, 22, 15, 20),
+    new Collectable(humanImg, 300, 22, 15, 20),
+    new Collectable(humanImg, 330, 22, 15, 20),
+    new Collectable(humanImg, 360, 22, 15, 20),
+    new Collectable(humanImg, 390, 22, 15, 20),
+    new Collectable(humanImg, 420, 22, 15, 20),
+    new Collectable(humanImg, 450, 22, 15, 20),
+    new Collectable(humanImg, 540, 22, 15, 20),
+    new Collectable(humanImg, 570, 22, 15, 20),
+    new Collectable(humanImg, 600, 22, 15, 20),
+    new Collectable(humanImg, 630, 22, 15, 20),
+    new Collectable(humanImg, 660, 22, 15, 20),
+    new Collectable(humanImg, 690, 22, 15, 20),
+    new Collectable(humanImg, 720, 22, 15, 20),
+    new Collectable(humanImg, 750, 22, 15, 20),
+    new Collectable(humanImg, 780, 22, 15, 20),
+    new Collectable(humanImg, 810, 22, 15, 20),
+    new Collectable(humanImg, 840, 22, 15, 20),
+    new Collectable(humanImg, 870, 22, 15, 20),
+    new Collectable(humanImg, 900, 22, 15, 20),
+    new Collectable(humanImg, 930, 22, 15, 20),
+    new Collectable(humanImg, 960, 22, 15, 20),
+    new Collectable(humanImg, 30, 102, 15, 20),
+    new Collectable(humanImg, 60, 102, 15, 20),
+    new Collectable(humanImg, 90, 102, 15, 20),
+    new Collectable(humanImg, 120, 102, 15, 20),
+    new Collectable(humanImg, 150, 102, 15, 20),
+    new Collectable(humanImg, 180, 102, 15, 20),
+    new Collectable(humanImg, 210, 102, 15, 20),
+    new Collectable(humanImg, 240, 102, 15, 20),
+    new Collectable(humanImg, 270, 102, 15, 20),
+    new Collectable(humanImg, 300, 102, 15, 20),
+    new Collectable(humanImg, 330, 102, 15, 20),
+    new Collectable(humanImg, 360, 102, 15, 20),
+    new Collectable(humanImg, 390, 102, 15, 20),
+    new Collectable(humanImg, 420, 102, 15, 20),
+    new Collectable(humanImg, 450, 102, 15, 20),
+    new Collectable(humanImg, 480, 102, 15, 20),
+    new Collectable(humanImg, 510, 102, 15, 20),
+    new Collectable(humanImg, 540, 102, 15, 20),
+    new Collectable(humanImg, 570, 102, 15, 20),
+    new Collectable(humanImg, 600, 102, 15, 20),
+    new Collectable(humanImg, 630, 102, 15, 20),
+    new Collectable(humanImg, 660, 102, 15, 20),
+    new Collectable(humanImg, 690, 102, 15, 20),
+    new Collectable(humanImg, 720, 102, 15, 20),
+    new Collectable(humanImg, 750, 102, 15, 20),
+    new Collectable(humanImg, 780, 102, 15, 20),
+    new Collectable(humanImg, 810, 102, 15, 20),
+    new Collectable(humanImg, 840, 102, 15, 20),
+    new Collectable(humanImg, 870, 102, 15, 20),
+    new Collectable(humanImg, 900, 102, 15, 20),
+    new Collectable(humanImg, 930, 102, 15, 20),
+    new Collectable(humanImg, 960, 102, 15, 20),
+    new Collectable(humanImg, 30, 162, 15, 20),
+    new Collectable(humanImg, 60, 162, 15, 20),
+    new Collectable(humanImg, 90, 162, 15, 20),
+    new Collectable(humanImg, 120, 162, 15, 20),
+    new Collectable(humanImg, 150, 162, 15, 20),
+    new Collectable(humanImg, 180, 162, 15, 20),
+    new Collectable(humanImg, 210, 162, 15, 20),
+    new Collectable(humanImg, 330, 162, 15, 20),
+    new Collectable(humanImg, 360, 162, 15, 20),
+    new Collectable(humanImg, 390, 162, 15, 20),
+    new Collectable(humanImg, 420, 162, 15, 20),
+    new Collectable(humanImg, 570, 162, 15, 20),
+    new Collectable(humanImg, 600, 162, 15, 20),
+    new Collectable(humanImg, 630, 162, 15, 20),
+    new Collectable(humanImg, 660, 162, 15, 20),
+    new Collectable(humanImg, 780, 162, 15, 20),
+    new Collectable(humanImg, 810, 162, 15, 20),
+    new Collectable(humanImg, 840, 162, 15, 20),
+    new Collectable(humanImg, 870, 162, 15, 20),
+    new Collectable(humanImg, 900, 162, 15, 20),
+    new Collectable(humanImg, 930, 162, 15, 20),
+    new Collectable(humanImg, 960, 162, 15, 20),
+    new Collectable(humanImg, 30, 444, 15, 20),
+    new Collectable(humanImg, 60, 444, 15, 20),
+    new Collectable(humanImg, 90, 444, 15, 20),
+    new Collectable(humanImg, 120, 444, 15, 20),
+    new Collectable(humanImg, 150, 444, 15, 20),
+    new Collectable(humanImg, 180, 444, 15, 20),
+    new Collectable(humanImg, 210, 444, 15, 20),
+    new Collectable(humanImg, 240, 444, 15, 20),
+    new Collectable(humanImg, 270, 444, 15, 20),
+    new Collectable(humanImg, 300, 444, 15, 20),
+    new Collectable(humanImg, 330, 444, 15, 20),
+    new Collectable(humanImg, 360, 444, 15, 20),
+    new Collectable(humanImg, 390, 444, 15, 20),
+    new Collectable(humanImg, 420, 444, 15, 20),
+    new Collectable(humanImg, 570, 444, 15, 20),
+    new Collectable(humanImg, 600, 444, 15, 20),
+    new Collectable(humanImg, 630, 444, 15, 20),
+    new Collectable(humanImg, 660, 444, 15, 20),
+    new Collectable(humanImg, 690, 444, 15, 20),
+    new Collectable(humanImg, 720, 444, 15, 20),
+    new Collectable(humanImg, 750, 444, 15, 20),
+    new Collectable(humanImg, 780, 444, 15, 20),
+    new Collectable(humanImg, 810, 444, 15, 20),
+    new Collectable(humanImg, 840, 444, 15, 20),
+    new Collectable(humanImg, 870, 444, 15, 20),
+    new Collectable(humanImg, 900, 444, 15, 20),
+    new Collectable(humanImg, 930, 444, 15, 20),
+    new Collectable(humanImg, 960, 444, 15, 20),
+    new Collectable(humanImg, 60, 502, 15, 20),
+    new Collectable(humanImg, 90, 502, 15, 20),
+    new Collectable(humanImg, 120, 502, 15, 20),
+    new Collectable(humanImg, 210, 502, 15, 20),
+    new Collectable(humanImg, 240, 502, 15, 20),
+    new Collectable(humanImg, 270, 502, 15, 20),
+    new Collectable(humanImg, 300, 502, 15, 20),
+    new Collectable(humanImg, 330, 502, 15, 20),
+    new Collectable(humanImg, 360, 502, 15, 20),
+    new Collectable(humanImg, 390, 502, 15, 20),
+    new Collectable(humanImg, 420, 502, 15, 20),
+    new Collectable(humanImg, 450, 502, 15, 20),
+    new Collectable(humanImg, 540, 502, 15, 20),
+    new Collectable(humanImg, 570, 502, 15, 20),
+    new Collectable(humanImg, 600, 502, 15, 20),
+    new Collectable(humanImg, 630, 502, 15, 20),
+    new Collectable(humanImg, 660, 502, 15, 20),
+    new Collectable(humanImg, 690, 502, 15, 20),
+    new Collectable(humanImg, 720, 502, 15, 20),
+    new Collectable(humanImg, 750, 502, 15, 20),
+    new Collectable(humanImg, 780, 502, 15, 20),
+    new Collectable(humanImg, 870, 502, 15, 20),
+    new Collectable(humanImg, 900, 502, 15, 20),
+    new Collectable(humanImg, 930, 502, 15, 20),
+    new Collectable(humanImg, 30, 594, 15, 20),
+    new Collectable(humanImg, 60, 594, 15, 20),
+    new Collectable(humanImg, 90, 594, 15, 20),
+    new Collectable(humanImg, 120, 594, 15, 20),
+    new Collectable(humanImg, 150, 594, 15, 20),
+    new Collectable(humanImg, 180, 594, 15, 20),
+    new Collectable(humanImg, 210, 594, 15, 20),
+    new Collectable(humanImg, 330, 594, 15, 20),
+    new Collectable(humanImg, 360, 594, 15, 20),
+    new Collectable(humanImg, 390, 594, 15, 20),
+    new Collectable(humanImg, 420, 594, 15, 20),
+    new Collectable(humanImg, 570, 594, 15, 20),
+    new Collectable(humanImg, 600, 594, 15, 20),
+    new Collectable(humanImg, 630, 594, 15, 20),
+    new Collectable(humanImg, 660, 594, 15, 20),
+    new Collectable(humanImg, 780, 594, 15, 20),
+    new Collectable(humanImg, 810, 594, 15, 20),
+    new Collectable(humanImg, 840, 594, 15, 20),
+    new Collectable(humanImg, 870, 594, 15, 20),
+    new Collectable(humanImg, 900, 594, 15, 20),
+    new Collectable(humanImg, 930, 594, 15, 20),
+    new Collectable(humanImg, 960, 594, 15, 20),
+    new Collectable(humanImg, 30, 654, 15, 20),
+    new Collectable(humanImg, 60, 654, 15, 20),
+    new Collectable(humanImg, 90, 654, 15, 20),
+    new Collectable(humanImg, 120, 654, 15, 20),
+    new Collectable(humanImg, 150, 654, 15, 20),
+    new Collectable(humanImg, 180, 654, 15, 20),
+    new Collectable(humanImg, 210, 654, 15, 20),
+    new Collectable(humanImg, 240, 654, 15, 20),
+    new Collectable(humanImg, 270, 654, 15, 20),
+    new Collectable(humanImg, 300, 654, 15, 20),
+    new Collectable(humanImg, 330, 654, 15, 20),
+    new Collectable(humanImg, 360, 654, 15, 20),
+    new Collectable(humanImg, 390, 654, 15, 20),
+    new Collectable(humanImg, 420, 654, 15, 20),
+    new Collectable(humanImg, 450, 654, 15, 20),
+    new Collectable(humanImg, 480, 654, 15, 20),
+    new Collectable(humanImg, 510, 654, 15, 20),
+    new Collectable(humanImg, 540, 654, 15, 20),
+    new Collectable(humanImg, 570, 654, 15, 20),
+    new Collectable(humanImg, 600, 654, 15, 20),
+    new Collectable(humanImg, 630, 654, 15, 20),
+    new Collectable(humanImg, 660, 654, 15, 20),
+    new Collectable(humanImg, 690, 654, 15, 20),
+    new Collectable(humanImg, 720, 654, 15, 20),
+    new Collectable(humanImg, 750, 654, 15, 20),
+    new Collectable(humanImg, 780, 654, 15, 20),
+    new Collectable(humanImg, 810, 654, 15, 20),
+    new Collectable(humanImg, 840, 654, 15, 20),
+    new Collectable(humanImg, 870, 654, 15, 20),
+    new Collectable(humanImg, 900, 654, 15, 20),
+    new Collectable(humanImg, 930, 654, 15, 20),
+    new Collectable(humanImg, 960, 654, 15, 20),
+    new Collectable(humanImg, 210, 62, 15, 20),
+    new Collectable(humanImg, 450, 62, 15, 20),
+    new Collectable(humanImg, 540, 62, 15, 20),
+    new Collectable(humanImg, 770, 62, 15, 20),
+    new Collectable(humanImg, 106, 544, 15, 20),
+    new Collectable(humanImg, 210, 544, 15, 20),
+    new Collectable(humanImg, 330, 544, 15, 20),
+    new Collectable(humanImg, 660, 544, 15, 20),
+    new Collectable(humanImg, 770, 544, 15, 20),
+    new Collectable(humanImg, 880, 544, 15, 20),
+    new Collectable(humanImg, 210, 200, 15, 20),
+    new Collectable(humanImg, 210, 240, 15, 20),
+    new Collectable(humanImg, 210, 280, 15, 20),
+    new Collectable(humanImg, 210, 320, 15, 20),
+    new Collectable(humanImg, 210, 360, 15, 20),
+    new Collectable(humanImg, 210, 400, 15, 20),
+    new Collectable(humanImg, 770, 200, 15, 20),
+    new Collectable(humanImg, 770, 240, 15, 20),
+    new Collectable(humanImg, 770, 280, 15, 20),
+    new Collectable(humanImg, 770, 320, 15, 20),
+    new Collectable(humanImg, 770, 360, 15, 20),
+    new Collectable(humanImg, 770, 400, 15, 20)
 ];
 
 //Event listener
 document.addEventListener("keydown", (event) => {
     switch (event.keyCode) {
       case 38:
-        mainPlayer.moveUp(walls);
+        upArrow = true;
+        downArrow = false;
+        leftArrow = false;
+        rightArrow = false;
         break;
       case 40:
-        mainPlayer.moveDown(walls);
+        upArrow = false;
+        downArrow = true;
+        leftArrow = false;
+        rightArrow = false;
         break;
       case 37:
-        mainPlayer.moveLeft(walls);
+        upArrow = false;
+        downArrow = false;
+        leftArrow = true;
+        rightArrow = false;
         break;
       case 39:
-        mainPlayer.moveRight(walls);
+        upArrow = false;
+        downArrow = false;
+        leftArrow = false;
+        rightArrow = true;
         break;
     };
-  });
-
+});
 playBtn.forEach(e => {
     e.addEventListener('click', () => {
         // Values
-        mainPlayer = new Player(virusImg, 479, 486);
+        mainPlayer = new Player(virusImg, 480, 495);
         //Display page
         splashScreen.style.display = 'none';
         mycanvas.style.display = 'block';
@@ -209,12 +445,27 @@ function updateGameArea() {
     ctx.fillRect(0, 0, mycanvas.width, mycanvas.height);
     walls.forEach((wall) => {
         wall.draw();
-    })
+    });
+    specialCollects.forEach(specialCollect => {
+        specialCollect.draw();
+    });
+    collects.forEach(collect => {
+        collect.draw();
+    });
     //Player
     mainPlayer.draw();
+    if(upArrow){
+        mainPlayer.moveUp(walls);
+    } else if(downArrow){
+        mainPlayer.moveDown(walls);
+    } else if(leftArrow){
+        mainPlayer.moveLeft(walls);
+    } else if(rightArrow){
+        mainPlayer.moveRight(walls);
+    };
     walls.forEach(wall => {
         mainPlayer.checkcollision(wall);
-    })
+    });
 };
 
 
