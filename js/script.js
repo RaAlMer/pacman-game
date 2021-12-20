@@ -3,7 +3,8 @@ let splashScreen = document.getElementById('start-page');
 let playBtn = document.querySelectorAll('.play-btn');
 
 //Variables
-
+let mainPlayer = 0;
+let intervalId = 0;
 //Images
 //Classes
 const virusImg = new Image();
@@ -28,8 +29,6 @@ vaccineImg.src = "../images/vaccine.png";
 //Canvas
 const mycanvas = document.getElementById('my-canvas');
 let ctx = mycanvas.getContext('2d');
-ctx.fillStyle = "black";
-ctx.fillRect(0, 0, mycanvas.width, mycanvas.height);
 
 //Walls
 class Wall {
@@ -48,22 +47,70 @@ class Wall {
 };
 
 class Player {
-    constructor(x, y, width, height, color){
+    constructor(img, x, y){
+        this.img = img;
         this.x = x;
         this.y = y;
-        this.width = width;
-        this.height = height;
-        this.color = color;
+        this.width = 40;
+        this.height = 40;
+        this.speedX = 10;
+        this.speedY = 10;
     }
     draw(){
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = this.color;
-        ctx.strokeRect(this.x, this.y, this.width, this.height);
-    }
+        ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+    };
+    checkcollision(object) {
+        return (
+          this.x < object.x + object.width &&
+          this.x + this.width > object.x &&
+          this.y < object.y + object.height &&
+          this.y + this.height > object.y
+        );
+    };
+    moveRight(objects) {
+        this.x += this.speedX;
+        objects.forEach(object => {
+            if (this.checkcollision(object)) {
+                this.x -= this.speedX;
+                console.log('collision');
+              };
+        })
+      };
+    
+    moveLeft(objects) {
+        this.x -= this.speedX;
+        objects.forEach(object => {
+            if (this.checkcollision(object)) {
+                this.x += this.speedX;
+                console.log('collision');
+            };
+        })
+    };
+    
+    moveUp(objects) {
+        this.y -= this.speedY;
+        objects.forEach(object => {
+            if (this.checkcollision(object)) {
+                this.y += this.speedY;
+                console.log('collision');
+            };
+        })
+    };
+    
+    moveDown(objects) {
+        this.y += this.speedY;
+        objects.forEach(object => {
+            if (this.checkcollision(object)) {
+                this.y -= this.speedY;
+                console.log('collision');
+            };
+        })
+    };
 };
 
 const wallThikness = 10;
-const outerWalls = [
+const walls = [
+    //Outer walls
     new Wall(40, 3, 920, wallThikness, "blue"),
     new Wall(40, mycanvas.height - wallThikness - 2, 920, wallThikness, "blue"),
     new Wall(40, 3, wallThikness, 207, "blue"),
@@ -81,10 +128,8 @@ const outerWalls = [
     new Wall(40, 285, 184, wallThikness, "blue"),
     new Wall(776, 285, 184, wallThikness, "blue"),
     new Wall(40, 338, 184, wallThikness, "blue"),
-    new Wall(776, 338, 184, wallThikness, "blue")
-];
-
-const innerWalls = [
+    new Wall(776, 338, 184, wallThikness, "blue"),
+    //Inner walls
     new Wall(93, 56, 131, 43, "blue"),
     new Wall(466, 13, 66, 86, "blue"),
     new Wall(267, 56, 156, 43, "blue"),
@@ -124,9 +169,56 @@ const innerWalls = [
     new Wall(356, 350, 287, 10, "blue"),
 ];
 
-outerWalls.forEach((wall) => {
-    wall.draw();
-})
-innerWalls.forEach((wall) => {
-    wall.draw();
-})
+//Event listener
+document.addEventListener("keydown", (event) => {
+    switch (event.keyCode) {
+      case 38:
+        mainPlayer.moveUp(walls);
+        break;
+      case 40:
+        mainPlayer.moveDown(walls);
+        break;
+      case 37:
+        mainPlayer.moveLeft(walls);
+        break;
+      case 39:
+        mainPlayer.moveRight(walls);
+        break;
+    };
+  });
+
+playBtn.forEach(e => {
+    e.addEventListener('click', () => {
+        // Values
+        mainPlayer = new Player(virusImg, 479, 486);
+        //Display page
+        splashScreen.style.display = 'none';
+        mycanvas.style.display = 'block';
+        //Start game
+        intervalId = setInterval(() => {
+            requestAnimationFrame(updateGameArea);
+        }, 20);
+    });
+});
+
+//Functions
+function updateGameArea() {
+    ctx.clearRect(0, 0, mycanvas.width, mycanvas.height);
+    //Canvas definition
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, mycanvas.width, mycanvas.height);
+    walls.forEach((wall) => {
+        wall.draw();
+    })
+    //Player
+    mainPlayer.draw();
+    walls.forEach(wall => {
+        mainPlayer.checkcollision(wall);
+    })
+};
+
+
+// Run
+/* window.addEventListener('load', () => {
+    splashScreen.style.display = 'block';
+}); */

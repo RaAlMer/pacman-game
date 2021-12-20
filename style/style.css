@@ -5,8 +5,8 @@ body {
     color: #FFF;
 }
 #start-page{
-    /* display: block; */
-    display: none;
+    display: block;
+    /* display: none; */
 }
 #bg-img {
     width: 1000px;
@@ -60,6 +60,6 @@ li {
     letter-spacing: 2px;
 }
 #my-canvas {
-    /* display: none; */
-    display: block;
+    display: none;
+    /* display: block; */
 }
