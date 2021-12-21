@@ -11,6 +11,7 @@ let leftArrow = false;
 let rightArrow = false;
 let points = 0;
 let lives = 0;
+let enemy = 0;
 
 //Images
 //Classes
@@ -134,6 +135,29 @@ class Player extends Collectable {
                 this.y -= this.speedY;
             };
         });
+    };
+};
+
+class Enemy extends Player {
+    constructor(img, x, y){
+        super(img, x, y);
+        this.width = 36;
+        this.height = 36;
+        this.speedX = 4;
+        this.speedY = 4;
+        this.dx = 0;
+        this.dy = 0;
+        this.distance = 0;
+        this.angle = 0;
+    };
+    updateAngle(player){
+        this.dx = player.x - this.x;
+        this.dy = player.y - this.y;
+        this.distance = Math.sqrt((this.dx*this.dx) + (this.dy*this.dy));
+        //this.angle = Math.atan2(this.dy,this.dx) * 180 / Math.PI;
+        this.angle = Math.atan2(this.dy,this.dx);
+        this.x += Math.cos(this.angle) * this.speedX;
+        this.y += Math.sin(this.angle) * this.speedY;
     };
 };
 
@@ -451,6 +475,7 @@ playBtn.forEach(e => {
     e.addEventListener('click', () => {
         // Values
         mainPlayer = new Player(virusImg, 480, 495);
+        enemy = new Enemy(vaccineImg, 15, 15)
         //Display page
         splashScreen.style.display = 'none';
         mycanvas.style.display = 'block';
@@ -508,6 +533,12 @@ function updateGameArea() {
     walls.forEach(wall => {
         mainPlayer.checkcollision(wall);
     });
+    //Enemies
+    enemy.draw();
+    walls.forEach(wall => {
+        enemy.checkcollision(wall);
+    });
+    enemy.updateAngle(mainPlayer);
 };
 
 
