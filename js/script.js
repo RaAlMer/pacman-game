@@ -9,6 +9,9 @@ let upArrow = false;
 let downArrow = false;
 let leftArrow = false;
 let rightArrow = false;
+let points = 0;
+let lives = 0;
+
 //Images
 //Classes
 const virusImg = new Image();
@@ -57,6 +60,8 @@ class Collectable {
         this.y = y;
         this.width = width;
         this.height = height;
+        this.collected = false;
+        this.notScored = true;
     };
     draw(){
         ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
@@ -69,6 +74,21 @@ class Collectable {
           this.y + this.height > object.y
         );
     };
+    collect(object){
+        if (this.checkcollision(object)) {
+            this.collected = true;
+            ctx.fillStyle = "black";
+            ctx.fillRect(this.x, this.y, this.width, this.height);
+        };
+    };
+    updateScore(object, score){
+        if (this.checkcollision(object)){
+            if (this.notScored === true){
+                points += score;
+                this.notScored = false;
+            }
+        }
+    }
 };
 
 class Player extends Collectable {
@@ -84,7 +104,9 @@ class Player extends Collectable {
         objects.forEach(object => {
             if (this.checkcollision(object)) {
                 this.x -= this.speedX;
-              };
+            } else if (this.x >= 976){
+                this.x = 0;
+            };
         });
       };
     moveLeft(objects) {
@@ -92,6 +114,8 @@ class Player extends Collectable {
         objects.forEach(object => {
             if (this.checkcollision(object)) {
                 this.x += this.speedX;
+            } else if (this.x <= 0){
+                this.x = 975;
             };
         });
     };
@@ -116,14 +140,14 @@ class Player extends Collectable {
 const outerWallThickness = 10;
 const walls = [
     //Outer walls
-    new Wall(0, 0, mycanvas.width, outerWallThickness, "blue"),
-    new Wall(0, mycanvas.height - outerWallThickness, mycanvas.width, outerWallThickness, "blue"),
+    new Wall(0, 0, mycanvas.width - 400, outerWallThickness, "blue"),
+    new Wall(0, mycanvas.height - outerWallThickness, mycanvas.width - 400, outerWallThickness, "blue"),
     new Wall(0, 0, outerWallThickness, 210, "blue"),
-    new Wall(mycanvas.width - outerWallThickness, 0, outerWallThickness, 210, "blue"),
+    new Wall(mycanvas.width - outerWallThickness - 400, 0, outerWallThickness, 210, "blue"),
     new Wall(0, 210 - outerWallThickness, 200, outerWallThickness, "blue"),
     new Wall(800, 210 - outerWallThickness, 200, outerWallThickness, "blue"),
     new Wall(0, 420, outerWallThickness, 280, "blue"),
-    new Wall(mycanvas.width - outerWallThickness, 420, outerWallThickness, 280, "blue"),
+    new Wall(mycanvas.width - outerWallThickness - 400, 420, outerWallThickness, 280, "blue"),
     new Wall(0, 420, 200, outerWallThickness, "blue"),
     new Wall(800, 420, 200, outerWallThickness, "blue"),
     new Wall(200 - outerWallThickness, 210 - outerWallThickness, outerWallThickness, 90, "blue"),
@@ -447,11 +471,29 @@ function updateGameArea() {
         wall.draw();
     });
     specialCollects.forEach(specialCollect => {
-        specialCollect.draw();
+        if (specialCollect.collected === false){
+            specialCollect.draw();
+        }
+        specialCollect.checkcollision(mainPlayer);
+        specialCollect.collect(mainPlayer);
+        specialCollect.updateScore(mainPlayer, 2000);
     });
     collects.forEach(collect => {
-        collect.draw();
+        if (collect.collected === false){
+            collect.draw();
+        };
+        collect.checkcollision(mainPlayer);
+        collect.collect(mainPlayer);
+        collect.updateScore(mainPlayer, 50);
     });
+    //Points
+    ctx.fillStyle = "white";
+    ctx.font = "24px 'Press Start 2P'"
+    ctx.fillText(`HIGH SCORE`, 1030, 40);
+    ctx.fillText(points, 1200, 80);
+    ctx.fillText("1UP", 1320, 40);
+    ctx.fillText("LIVES", 1150, 120);
+    ctx.fillText(lives, 1200, 160);
     //Player
     mainPlayer.draw();
     if(upArrow){
