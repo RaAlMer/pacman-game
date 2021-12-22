@@ -10,8 +10,9 @@ let downArrow = false;
 let leftArrow = false;
 let rightArrow = false;
 let points = 0;
-let lives = 0;
-let enemy = 0;
+let lives = 2;
+let enemies = [];
+let box = 0;
 
 //Images
 //Classes
@@ -40,12 +41,13 @@ let ctx = mycanvas.getContext('2d');
 
 //Walls
 class Wall {
-    constructor(x, y, width, height, color){
+    constructor(x, y, width, height, color, gate){
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
         this.color = color;
+        this.gate = gate;
     };
     draw(){
         ctx.lineWidth = 3;
@@ -143,83 +145,133 @@ class Enemy extends Player {
         super(img, x, y);
         this.width = 36;
         this.height = 36;
-        this.speedX = 4;
-        this.speedY = 4;
+        this.speedX = 2;
+        this.speedY = 2;
         this.dx = 0;
         this.dy = 0;
         this.distance = 0;
         this.angle = 0;
+        this.scared = false;
+        this.dead = false;
     };
-    updateAngle(player){
+    updateAngleX(player, objects){
         this.dx = player.x - this.x;
         this.dy = player.y - this.y;
         this.distance = Math.sqrt((this.dx*this.dx) + (this.dy*this.dy));
-        //this.angle = Math.atan2(this.dy,this.dx) * 180 / Math.PI;
         this.angle = Math.atan2(this.dy,this.dx);
         this.x += Math.cos(this.angle) * this.speedX;
-        this.y += Math.sin(this.angle) * this.speedY;
+        objects.forEach(object => {
+            if (this.dead === false || object.gate === false){
+                if (this.checkcollision(object)) {
+                    if (this.dy > 0){
+                        this.y += this.speedY;
+                        this.x -= Math.cos(this.angle) * this.speedX;
+                        if (this.checkcollision(object)){
+                            this.y -= this.speedY;
+                        };
+                    } else if (this.dy < 0){
+                        this.y -= this.speedY;
+                        this.x -= Math.cos(this.angle) * this.speedX;
+                        if (this.checkcollision(object)){
+                            this.y += this.speedY;
+                        };
+                    };
+                };
+            };
+        });
     };
+    updateAngleY(player, objects){
+        this.dx = player.x - this.x;
+        this.dy = player.y - this.y;
+        this.distance = Math.sqrt((this.dx*this.dx) + (this.dy*this.dy));
+        this.angle = Math.atan2(this.dy,this.dx);
+        this.y += Math.sin(this.angle) * this.speedY;
+        objects.forEach(object => {
+            if (this.dead === false || object.gate === false){
+                if (this.checkcollision(object)) {
+                    if (this.dx > 0){
+                        this.x += this.speedX;
+                        this.y -= Math.sin(this.angle) * this.speedY;
+                        if (this.checkcollision(object)){
+                            this.x -= this.speedX;
+                        };
+                    } else if (this.dx < 0){
+                        this.x -= this.speedX;
+                        this.y -= Math.sin(this.angle) * this.speedY;
+                        if (this.checkcollision(object)){
+                            this.x += this.speedX;
+                        };
+                    };
+                };
+            };
+        });
+    };
+    death(objects){
+        box = new Player("", 480, 290);
+        this.updateAngleX(box, objects);
+        this.updateAngleY(box, objects);
+    }
 };
 
 const outerWallThickness = 10;
 const walls = [
     //Outer walls
-    new Wall(0, 0, mycanvas.width - 400, outerWallThickness, "blue"),
-    new Wall(0, mycanvas.height - outerWallThickness, mycanvas.width - 400, outerWallThickness, "blue"),
-    new Wall(0, 0, outerWallThickness, 210, "blue"),
-    new Wall(mycanvas.width - outerWallThickness - 400, 0, outerWallThickness, 210, "blue"),
-    new Wall(0, 210 - outerWallThickness, 200, outerWallThickness, "blue"),
-    new Wall(800, 210 - outerWallThickness, 200, outerWallThickness, "blue"),
-    new Wall(0, 420, outerWallThickness, 280, "blue"),
-    new Wall(mycanvas.width - outerWallThickness - 400, 420, outerWallThickness, 280, "blue"),
-    new Wall(0, 420, 200, outerWallThickness, "blue"),
-    new Wall(800, 420, 200, outerWallThickness, "blue"),
-    new Wall(200 - outerWallThickness, 210 - outerWallThickness, outerWallThickness, 90, "blue"),
-    new Wall(800, 210 - outerWallThickness, outerWallThickness, 90, "blue"),
-    new Wall(200 - outerWallThickness, 340, outerWallThickness, 90, "blue"),
-    new Wall(800, 340, outerWallThickness, 90, "blue"),
-    new Wall(0, 280, 200, outerWallThickness, "blue"),
-    new Wall(800, 280, 200, outerWallThickness, "blue"),
-    new Wall(0, 340, 200, outerWallThickness, "blue"),
-    new Wall(800, 340, 200, outerWallThickness, "blue"),
+    new Wall(0, 0, mycanvas.width - 400, outerWallThickness, "blue", false),
+    new Wall(0, mycanvas.height - outerWallThickness, mycanvas.width - 400, outerWallThickness, "blue", false),
+    new Wall(0, 0, outerWallThickness, 210, "blue", false),
+    new Wall(mycanvas.width - outerWallThickness - 400, 0, outerWallThickness, 210, "blue", false),
+    new Wall(0, 210 - outerWallThickness, 200, outerWallThickness, "blue", false),
+    new Wall(800, 210 - outerWallThickness, 200, outerWallThickness, "blue", false),
+    new Wall(0, 420, outerWallThickness, 280, "blue", false),
+    new Wall(mycanvas.width - outerWallThickness - 400, 420, outerWallThickness, 280, "blue", false),
+    new Wall(0, 420, 200, outerWallThickness, "blue", false),
+    new Wall(800, 420, 200, outerWallThickness, "blue", false),
+    new Wall(200 - outerWallThickness, 210 - outerWallThickness, outerWallThickness, 90, "blue", false),
+    new Wall(800, 210 - outerWallThickness, outerWallThickness, 90, "blue", false),
+    new Wall(200 - outerWallThickness, 340, outerWallThickness, 90, "blue", false),
+    new Wall(800, 340, outerWallThickness, 90, "blue", false),
+    new Wall(0, 280, 200, outerWallThickness, "blue", false),
+    new Wall(800, 280, 200, outerWallThickness, "blue", false),
+    new Wall(0, 340, 200, outerWallThickness, "blue", false),
+    new Wall(800, 340, 200, outerWallThickness, "blue", false),
     //Inner walls
-    new Wall(60, 60, 140, 30, "blue"),
-    new Wall(480, 0, 40, 90, "blue"),
-    new Wall(250, 60, 180, 30, "blue"),
-    new Wall(800, 60, 140, 30, "blue"),
-    new Wall(570, 60, 180, 30, "blue"),
-    new Wall(60, 140, 140, 10, "blue"),
-    new Wall(800, 140, 140, 10, "blue"),
-    new Wall(250, 140, 60, 150, "blue"),
-    new Wall(690, 140, 60, 150, "blue"),
-    new Wall(250, 200, 160, 20, "blue"),
-    new Wall(590, 200, 160, 20, "blue"),
-    new Wall(360, 140, 280, 10, "blue"),
-    new Wall(460, 140, 80, 80, "blue"),
-    new Wall(250, 340, 60, 90, "blue"),
-    new Wall(690, 340, 60, 90, "blue"),
-    new Wall(360, 400, 280, 30, "blue"),
-    new Wall(460, 400, 80, 90, "blue"),
-    new Wall(250, 480, 160, 10, "blue"),
-    new Wall(590, 480, 160, 10, "blue"),
-    new Wall(60, 480, 140, 10, "blue"),
-    new Wall(800, 480, 140, 10, "blue"),
-    new Wall(140, 480, 60, 100, "blue"),
-    new Wall(800, 480, 60, 100, "blue"),
-    new Wall(0, 540, 90, 40, "blue"),
-    new Wall(910, 540, 90, 40, "blue"),
-    new Wall(60, 630, 350, 10, "blue"),
-    new Wall(590, 630, 350, 10, "blue"),
-    new Wall(250, 540, 60, 100, "blue"),
-    new Wall(690, 540, 60, 100, "blue"),
-    new Wall(360, 540, 280, 40, "blue"),
-    new Wall(460, 540, 80, 100, "blue"),
-    new Wall(360, 270, 10, 80, "blue"),
-    new Wall(630, 270, 10, 80, "blue"),
-    new Wall(360, 270, 115, 10, "blue"),
-    new Wall(525, 270, 115, 10, "blue"),
-    new Wall(474, 270, 50, 10, "yellow"),
-    new Wall(360, 340, 280, 10, "blue"),
+    new Wall(60, 60, 140, 30, "blue", false),
+    new Wall(480, 0, 40, 90, "blue", false),
+    new Wall(250, 60, 180, 30, "blue", false),
+    new Wall(800, 60, 140, 30, "blue", false),
+    new Wall(570, 60, 180, 30, "blue", false),
+    new Wall(60, 140, 140, 10, "blue", false),
+    new Wall(800, 140, 140, 10, "blue", false),
+    new Wall(250, 140, 60, 150, "blue", false),
+    new Wall(690, 140, 60, 150, "blue", false),
+    new Wall(250, 200, 160, 20, "blue", false),
+    new Wall(590, 200, 160, 20, "blue", false),
+    new Wall(360, 140, 280, 10, "blue", false),
+    new Wall(460, 140, 80, 80, "blue", false),
+    new Wall(250, 340, 60, 90, "blue", false),
+    new Wall(690, 340, 60, 90, "blue", false),
+    new Wall(360, 400, 280, 30, "blue", false),
+    new Wall(460, 400, 80, 90, "blue", false),
+    new Wall(250, 480, 160, 10, "blue", false),
+    new Wall(590, 480, 160, 10, "blue", false),
+    new Wall(60, 480, 140, 10, "blue", false),
+    new Wall(800, 480, 140, 10, "blue", false),
+    new Wall(140, 480, 60, 100, "blue", false),
+    new Wall(800, 480, 60, 100, "blue", false),
+    new Wall(0, 540, 90, 40, "blue", false),
+    new Wall(910, 540, 90, 40, "blue", false),
+    new Wall(60, 630, 350, 10, "blue", false),
+    new Wall(590, 630, 350, 10, "blue", false),
+    new Wall(250, 540, 60, 100, "blue", false),
+    new Wall(690, 540, 60, 100, "blue", false),
+    new Wall(360, 540, 280, 40, "blue", false),
+    new Wall(460, 540, 80, 100, "blue", false),
+    new Wall(360, 270, 10, 80, "blue", false),
+    new Wall(630, 270, 10, 80, "blue", false),
+    new Wall(360, 270, 115, 10, "blue", false),
+    new Wall(525, 270, 115, 10, "blue", false),
+    new Wall(474, 270, 50, 10, "yellow", true),
+    new Wall(360, 340, 280, 10, "blue", false),
 ];
 const specialCollects = [
     new Collectable(mutationImg, 20, 60, 30, 30),
@@ -475,7 +527,12 @@ playBtn.forEach(e => {
     e.addEventListener('click', () => {
         // Values
         mainPlayer = new Player(virusImg, 480, 495);
-        enemy = new Enemy(vaccineImg, 15, 15)
+        enemies = [
+            new Enemy(vaccineImg, 460, 290),
+            new Enemy(vaccineImg, 400, 290),
+            new Enemy(vaccineImg, 520, 290),
+            new Enemy(vaccineImg, 580, 290)
+        ];
         //Display page
         splashScreen.style.display = 'none';
         mycanvas.style.display = 'block';
@@ -534,11 +591,16 @@ function updateGameArea() {
         mainPlayer.checkcollision(wall);
     });
     //Enemies
-    enemy.draw();
-    walls.forEach(wall => {
-        enemy.checkcollision(wall);
+    enemies.forEach(enemy => {
+        enemy.draw();
+        walls.forEach(wall => {
+            enemy.checkcollision(wall);
+        });
+        /* enemy.updateAngleX(mainPlayer, walls);
+        enemy.updateAngleY(mainPlayer, walls); */
+        /* enemy.dead = true;
+        enemy.death(walls); */
     });
-    enemy.updateAngle(mainPlayer);
 };
 
 
