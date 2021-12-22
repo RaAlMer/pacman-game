@@ -5,13 +5,15 @@ body {
     color: #FFF;
 }
 #start-page{
-    display: block;
+    z-index: -1;
+    display: none;
     /* display: none; */
 }
 #bg-img {
     width: 1000px;
     height: 700px;
     position: absolute;
+    z-index: -100;
 }
 #instructions {
     position: relative;
@@ -58,6 +60,61 @@ li {
     cursor: pointer;
     -webkit-text-stroke: 2px black;
     letter-spacing: 2px;
+}
+#bacteria {
+    transform: rotate(100deg);
+    height: 200px;
+    position: absolute;
+}
+
+#virus {
+    transform: rotate(240deg);
+    height: 200px;
+    position: absolute;
+    margin-left: 800px;
+}
+
+#nanovirus {
+    transform: rotate(60deg);
+    height: 200px;
+    position: absolute;
+    margin-top: 500px;
+    margin-left: 60px;
+}
+
+#protozoa {
+    transform: rotate(300deg);
+    height: 200px;
+    position: absolute;
+    margin-top: 500px;
+    margin-left: 840px;
+}
+#game-over-page {
+    display: block;
+    background-color: black;
+    width: 1000px;
+    height: 700px;
+    margin-top: -20px;
+}
+#game-over-page h1 {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 1000px;
+    padding-top: 360px;
+}
+#game-over-page h5 {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 1000px;
+}
+#game-over-page button {
+    margin-left: 400px;
+    white-space: normal;
+    width: 200px;
 }
 #my-canvas {
     display: none;
