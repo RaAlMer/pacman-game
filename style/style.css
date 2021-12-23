@@ -147,7 +147,7 @@ li {
     flex-direction: column;
     align-items: center;
     max-width: 1000px;
-    padding-top: 20px;
+    padding-top: 10px;
 }
 #game-over-page h5 {
     position: relative;
@@ -165,6 +165,7 @@ li {
     position: relative;
     height: 60px;
     margin-left: 220px;
+    margin-bottom: 80px;
     margin-top: 180px;
     animation-name: pursue;
     animation-duration: 6s;
@@ -173,6 +174,8 @@ li {
 .vaccine {
     position: relative;
     height: 60px;
+    margin-top: 180px;
+    margin-bottom: 80px;
     animation-name: pursue;
     animation-duration: 6s;
     animation-iteration-count: infinite;

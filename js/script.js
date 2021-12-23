@@ -8,6 +8,7 @@ let virusBtn = document.getElementById('virusPlayer');
 let bacteriaBtn = document.getElementById('bacteriaPlayer');
 let nanovirusBtn = document.getElementById('nanovirusPlayer');
 let protozoaBtn = document.getElementById('protozoaPlayer');
+let gameoverImg = document.getElementById('virus-gameover');
 
 //Variables
 let pickedPathogen = null;
@@ -563,12 +564,16 @@ playBtn.forEach(e => {
             // Values
             if (pickedPathogen === 'virusPl'){
                 mainPlayer = new Player(virusImg, 480, 495);
+                gameoverImg.src = "../images/virus.png";
             } else if (pickedPathogen === 'bacteriaPl'){
                 mainPlayer = new Player(bacteriaImg, 480, 495);
+                gameoverImg.src = "../images/bacteria.png";
             } else if (pickedPathogen === 'nanovirusPl'){
                 mainPlayer = new Player(nanovirusImg, 480, 495);
+                gameoverImg.src = "../images/nanovirus.png";
             } else if (pickedPathogen === 'protozoaPl'){
                 mainPlayer = new Player(protozoaImg, 480, 495);
+                gameoverImg.src = "../images/protozoa.png";
             };
             enemies = [
                 new Enemy(vaccineImg, 460, 290),
@@ -682,14 +687,13 @@ function updateGameArea() {
             enemies[3].updateAngleY(mainPlayer, walls);
         };
         if (mainPlayer.checkcollision(enemy)){
-            console.log("GAME OVER");
             lives--;
             pointsRestart = 0;
             upArrow = false;
             downArrow = false;
             leftArrow = false;
             rightArrow = false;
-            if (lives  < 0){
+            if (lives < 0){
                 gameOverScreen.style.display = 'block';
                 mycanvas.style.display = 'none';
                 //Restart variables
