@@ -6,7 +6,7 @@ body {
 }
 #start-page{
     z-index: -1;
-    display: none;
+    display: block;
     /* display: none; */
 }
 #bg-img {
@@ -90,7 +90,7 @@ li {
     margin-left: 840px;
 }
 #game-over-page {
-    display: block;
+    display: none;
     background-color: black;
     width: 1000px;
     height: 700px;
@@ -102,7 +102,7 @@ li {
     flex-direction: column;
     align-items: center;
     max-width: 1000px;
-    padding-top: 360px;
+    padding-top: 20px;
 }
 #game-over-page h5 {
     position: relative;
@@ -116,6 +116,32 @@ li {
     white-space: normal;
     width: 200px;
 }
+#virus-gameover {
+    position: relative;
+    height: 60px;
+    margin-left: 220px;
+    margin-top: 180px;
+    animation-name: pursue;
+    animation-duration: 6s;
+    animation-iteration-count: infinite;
+}
+.vaccine {
+    position: relative;
+    height: 60px;
+    animation-name: pursue;
+    animation-duration: 6s;
+    animation-iteration-count: infinite;
+}
+@keyframes pursue {
+    from {
+        right: -40%;
+        max-width: 100%;
+      }
+      to {
+        right: 60%;
+        max-width: 100%;
+      }
+  }
 #my-canvas {
     display: none;
     /* display: block; */

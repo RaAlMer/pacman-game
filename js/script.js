@@ -11,6 +11,7 @@ let downArrow = false;
 let leftArrow = false;
 let rightArrow = false;
 let points = 0;
+let pointsRestart = 0;
 let lives = 2;
 let enemies = [];
 let box = 0;
@@ -90,6 +91,7 @@ class Collectable {
         if (this.checkcollision(object)){
             if (this.notScored === true){
                 points += score;
+                pointsRestart += score;
                 this.notScored = false;
             }
         }
@@ -603,7 +605,7 @@ function updateGameArea() {
         enemies.forEach(enemyClon => {
             enemyClon.checkcollision(enemy);
         })
-        if (points >= 2500){
+        if (pointsRestart >= 2500){
             if(enemies[0].home === true){
                 enemies[0].x = 480;
                 enemies[0].y = 230;
@@ -612,7 +614,7 @@ function updateGameArea() {
             enemies[0].updateAngleX(mainPlayer, walls);
             enemies[0].updateAngleY(mainPlayer, walls);
         };
-        if (points >= 5000){
+        if (pointsRestart >= 5000){
             if(enemies[1].home === true){
                 enemies[1].x = 480;
                 enemies[1].y = 230;
@@ -621,7 +623,7 @@ function updateGameArea() {
             enemies[1].updateAngleX(mainPlayer, walls);
             enemies[1].updateAngleY(mainPlayer, walls);
         };
-        if (points >= 7500){
+        if (pointsRestart >= 7500){
             if(enemies[2].home === true){
                 enemies[2].x = 480;
                 enemies[2].y = 230;
@@ -630,7 +632,7 @@ function updateGameArea() {
             enemies[2].updateAngleX(mainPlayer, walls);
             enemies[2].updateAngleY(mainPlayer, walls);
         };
-        if (points >= 10000){
+        if (pointsRestart >= 10000){
             if(enemies[3].home === true){
                 enemies[3].x = 480;
                 enemies[3].y = 230;
@@ -642,8 +644,35 @@ function updateGameArea() {
         if (mainPlayer.checkcollision(enemy)){
             console.log("GAME OVER");
             lives--;
-            clearInterval(intervalId);
-            restart();
+            pointsRestart = 0;
+            upArrow = false;
+            downArrow = false;
+            leftArrow = false;
+            rightArrow = false;
+            if (lives  < 0){
+                gameOverScreen.style.display = 'block';
+                mycanvas.style.display = 'none';
+                //Restart variables
+                specialCollects.forEach(specialCollect => {
+                    specialCollect.collected = false;
+                    specialCollect.notScored = true;
+                });
+                collects.forEach(collect => {
+                    collect.collected = false;
+                    collect.notScored = true;
+                });
+                lives = 2;
+                points = 0;
+                pointsRestart = 0;
+                upArrow = false;
+                downArrow = false;
+                leftArrow = false;
+                rightArrow = false;
+                clearInterval(intervalId);
+            } else {
+                clearInterval(intervalId);
+                restart();
+            }
         }
         /* enemy.dead = true;
         enemy.death(walls); */
