@@ -1,9 +1,16 @@
 //Selectors
 let splashScreen = document.getElementById('start-page');
+let playBtnStart = document.querySelectorAll('.play-btn-start');
 let playBtn = document.querySelectorAll('.play-btn');
 let gameOverScreen = document.getElementById('game-over-page');
+let selectPlayerScreen = document.getElementById('select-player-page');
+let virusBtn = document.getElementById('virusPlayer');
+let bacteriaBtn = document.getElementById('bacteriaPlayer');
+let nanovirusBtn = document.getElementById('nanovirusPlayer');
+let protozoaBtn = document.getElementById('protozoaPlayer');
 
 //Variables
+let pickedPathogen = null;
 let mainPlayer = 0;
 let intervalId = 0;
 let upArrow = false;
@@ -528,24 +535,57 @@ document.addEventListener("keydown", (event) => {
         break;
     };
 });
-playBtn.forEach(e => {
+playBtnStart.forEach(e => {
     e.addEventListener('click', () => {
-        // Values
-        mainPlayer = new Player(virusImg, 480, 495);
-        enemies = [
-            new Enemy(vaccineImg, 460, 290),
-            new Enemy(vaccineImg, 400, 290),
-            new Enemy(vaccineImg, 520, 290),
-            new Enemy(vaccineImg, 580, 290)
-        ];
         //Display page
         splashScreen.style.display = 'none';
         gameOverScreen.style.display = 'none';
-        mycanvas.style.display = 'block';
-        //Start game
-        intervalId = setInterval(() => {
-            requestAnimationFrame(updateGameArea);
-        }, 20);
+        selectPlayerScreen.style.display = 'block';
+    });
+})
+virusBtn.addEventListener('click', () => {
+    pickedPathogen = 'virusPl';
+});
+bacteriaBtn.addEventListener('click', () => {
+    pickedPathogen = 'bacteriaPl';
+});
+nanovirusBtn.addEventListener('click', () => {
+    pickedPathogen = 'nanovirusPl';
+});
+protozoaBtn.addEventListener('click', () => {
+    pickedPathogen = 'protozoaPl';
+});
+playBtn.forEach(e => {
+    e.addEventListener('click', () => {
+        if (pickedPathogen === null) {
+            alert('Please pick a pathogen!');
+        } else {
+            // Values
+            if (pickedPathogen === 'virusPl'){
+                mainPlayer = new Player(virusImg, 480, 495);
+            } else if (pickedPathogen === 'bacteriaPl'){
+                mainPlayer = new Player(bacteriaImg, 480, 495);
+            } else if (pickedPathogen === 'nanovirusPl'){
+                mainPlayer = new Player(nanovirusImg, 480, 495);
+            } else if (pickedPathogen === 'protozoaPl'){
+                mainPlayer = new Player(protozoaImg, 480, 495);
+            };
+            enemies = [
+                new Enemy(vaccineImg, 460, 290),
+                new Enemy(vaccineImg, 400, 290),
+                new Enemy(vaccineImg, 520, 290),
+                new Enemy(vaccineImg, 580, 290)
+            ];
+            //Display page
+            splashScreen.style.display = 'none';
+            gameOverScreen.style.display = 'none';
+            selectPlayerScreen.style.display = 'none';
+            mycanvas.style.display = 'block';
+            //Start game
+            intervalId = setInterval(() => {
+                requestAnimationFrame(updateGameArea);
+            }, 20);
+        }
     });
 });
 
@@ -680,21 +720,34 @@ function updateGameArea() {
 };
 function restart(){
     // Values
-    mainPlayer = new Player(virusImg, 480, 495);
-    enemies = [
-        new Enemy(vaccineImg, 460, 290),
-        new Enemy(vaccineImg, 400, 290),
-        new Enemy(vaccineImg, 520, 290),
-        new Enemy(vaccineImg, 580, 290)
-    ];
-    //Display page
-    splashScreen.style.display = 'none';
-    gameOverScreen.style.display = 'none';
-    mycanvas.style.display = 'block';
-    //Start game
-    intervalId = setInterval(() => {
-        requestAnimationFrame(updateGameArea);
-    }, 20);
+    if (pickedPathogen === null) {
+        alert('Please pick a pathogen!');
+    } else {
+        if (pickedPathogen === 'virusPl'){
+            mainPlayer = new Player(virusImg, 480, 495);
+        } else if (pickedPathogen === 'bacteriaPl'){
+            mainPlayer = new Player(bacteriaImg, 480, 495);
+        } else if (pickedPathogen === 'nanovirusPl'){
+            mainPlayer = new Player(nanovirusImg, 480, 495);
+        } else if (pickedPathogen === 'protozoaPl'){
+            mainPlayer = new Player(protozoaImg, 480, 495);
+        };
+        enemies = [
+            new Enemy(vaccineImg, 460, 290),
+            new Enemy(vaccineImg, 400, 290),
+            new Enemy(vaccineImg, 520, 290),
+            new Enemy(vaccineImg, 580, 290)
+        ];
+        //Display page
+        splashScreen.style.display = 'none';
+        gameOverScreen.style.display = 'none';
+        selectPlayerScreen.style.display = 'none';
+        mycanvas.style.display = 'block';
+        //Start game
+        intervalId = setInterval(() => {
+            requestAnimationFrame(updateGameArea);
+        }, 20);
+    };
 };
 
 
