@@ -9,6 +9,7 @@ let bacteriaBtn = document.getElementById('bacteriaPlayer');
 let nanovirusBtn = document.getElementById('nanovirusPlayer');
 let protozoaBtn = document.getElementById('protozoaPlayer');
 let gameoverImg = document.getElementById('virus-gameover');
+let winScreen = document.getElementById('win-page');
 
 //Variables
 let pickedPathogen = null;
@@ -585,6 +586,7 @@ playBtn.forEach(e => {
             splashScreen.style.display = 'none';
             gameOverScreen.style.display = 'none';
             selectPlayerScreen.style.display = 'none';
+            winScreen.style.display = 'none';
             mycanvas.style.display = 'block';
             //Start game
             intervalId = setInterval(() => {
@@ -686,6 +688,28 @@ function updateGameArea() {
             enemies[3].updateAngleX(mainPlayer, walls);
             enemies[3].updateAngleY(mainPlayer, walls);
         };
+        //Winning
+        if (points >= 18600){
+            winScreen.style.display = 'block';
+            mycanvas.style.display = 'none';
+            //Restart variables
+            specialCollects.forEach(specialCollect => {
+                specialCollect.collected = false;
+                specialCollect.notScored = true;
+            });
+            collects.forEach(collect => {
+                collect.collected = false;
+                collect.notScored = true;
+            });
+            lives = 2;
+            points = 0;
+            pointsRestart = 0;
+            upArrow = false;
+            downArrow = false;
+            leftArrow = false;
+            rightArrow = false;
+            clearInterval(intervalId);
+        }
         if (mainPlayer.checkcollision(enemy)){
             lives--;
             pointsRestart = 0;
@@ -746,6 +770,7 @@ function restart(){
         splashScreen.style.display = 'none';
         gameOverScreen.style.display = 'none';
         selectPlayerScreen.style.display = 'none';
+        winScreen.style.display = 'none';
         mycanvas.style.display = 'block';
         //Start game
         intervalId = setInterval(() => {

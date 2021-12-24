@@ -134,6 +134,32 @@ li {
     margin-top: 500px;
     margin-left: 840px;
 }
+#win-page {
+    display: none;
+    background-color: black;
+    width: 1000px;
+    height: 700px;
+}
+#win-page h1 {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 1000px;
+    padding-top: 40px;
+    color: #FFD700;
+}
+#win-page img{
+    height: 300px;
+    width: 386px;
+    margin-bottom: -40px;
+    margin-left: 300px;
+}
+#win-page button {
+    margin-left: 400px;
+    white-space: normal;
+    width: 200px;
+}
 #game-over-page {
     display: none;
     background-color: black;
