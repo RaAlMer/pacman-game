@@ -7,7 +7,6 @@ body {
 #start-page{
     z-index: -1;
     display: block;
-    /* display: none; */
 }
 .play-btn-start{
     border-radius: 50%;
@@ -154,12 +153,26 @@ li {
     width: 386px;
     margin-bottom: -40px;
     margin-left: 300px;
+    animation-name: float;
+    animation-duration: 5s;
+    animation-iteration-count: infinite;
 }
 #win-page button {
     margin-left: 400px;
     white-space: normal;
     width: 200px;
 }
+@keyframes float {
+    0% {
+      transform: translatey(0px);
+    }
+    50% {
+      transform: translatey(-20px);
+    }
+    100% {
+      transform: translatey(0px);
+    }
+  }
 #game-over-page {
     display: none;
     background-color: black;
@@ -218,5 +231,4 @@ li {
   }
 #my-canvas {
     display: none;
-    /* display: block; */
 }

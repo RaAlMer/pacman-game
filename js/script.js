@@ -23,8 +23,7 @@ let points = 0;
 let pointsRestart = 0;
 let lives = 2;
 let enemies = [];
-let box = 0;
-let startPoint = 0;
+let outOfBox = 0;
 
 //Images
 //Classes
@@ -44,6 +43,8 @@ mutationImg.src = "../images/mutation.png";
 //Enemy
 const vaccineImg = new Image();
 vaccineImg.src = "../images/vaccine.png";
+const vaccineImgDeath = new Image();
+vaccineImgDeath.src = "../images/vaccineDead.png";
 
 //Audios
 
@@ -77,6 +78,7 @@ class Collectable {
         this.height = height;
         this.collected = false;
         this.notScored = true;
+        this.mutate = false;
     };
     draw(){
         ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
@@ -94,6 +96,7 @@ class Collectable {
             this.collected = true;
             ctx.fillStyle = "black";
             ctx.fillRect(this.x, this.y, this.width, this.height);
+            this.mutate = true;
         };
     };
     updateScore(object, score){
@@ -104,7 +107,7 @@ class Collectable {
                 this.notScored = false;
             }
         }
-    }
+    };
 };
 
 class Player extends Collectable {
@@ -158,8 +161,8 @@ class Enemy extends Player {
         super(img, x, y);
         this.width = 36;
         this.height = 36;
-        this.speedX = 0.5;
-        this.speedY = 0.5;
+        this.speedX = 0.4;
+        this.speedY = 0.4;
         this.dx = 0;
         this.dy = 0;
         this.distance = 0;
@@ -175,7 +178,7 @@ class Enemy extends Player {
         this.angle = Math.atan2(this.dy,this.dx);
         this.x += Math.cos(this.angle) * this.speedX;
         objects.forEach(object => {
-            if (this.dead === false || object.gate === false){
+            if (this.dead === false || object.color === "blue"){
                 if (this.checkcollision(object)) {
                     if (this.dy > 0){
                         this.y += this.speedY;
@@ -201,6 +204,58 @@ class Enemy extends Player {
         this.angle = Math.atan2(this.dy,this.dx);
         this.y += Math.sin(this.angle) * this.speedY;
         objects.forEach(object => {
+            if (this.dead === false || object.color === "blue"){
+                if (this.checkcollision(object)) {
+                    if (this.dx > 0){
+                        this.x += this.speedX;
+                        this.y -= Math.sin(this.angle) * this.speedY;
+                        if (this.checkcollision(object)){
+                            this.x -= this.speedX;
+                        };
+                    } else if (this.dx < 0){
+                        this.x -= this.speedX;
+                        this.y -= Math.sin(this.angle) * this.speedY;
+                        if (this.checkcollision(object)){
+                            this.x += this.speedX;
+                        };
+                    };
+                };
+            };
+        });
+    };
+    updateAngleScaredX(player, objects){
+        this.dx = this.x - player.x;
+        this.dy = this.y - player.y;
+        this.distance = Math.sqrt((this.dx*this.dx) + (this.dy*this.dy));
+        this.angle = Math.atan2(this.dy,this.dx);
+        this.x += Math.cos(this.angle) * this.speedX;
+        objects.forEach(object => {
+            if (this.dead === false || object.gate === false){
+                if (this.checkcollision(object)) {
+                    if (this.dy > 0){
+                        this.y += this.speedY;
+                        this.x -= Math.cos(this.angle) * this.speedX;
+                        if (this.checkcollision(object)){
+                            this.y -= this.speedY;
+                        };
+                    } else if (this.dy < 0){
+                        this.y -= this.speedY;
+                        this.x -= Math.cos(this.angle) * this.speedX;
+                        if (this.checkcollision(object)){
+                            this.y += this.speedY;
+                        };
+                    };
+                };
+            };
+        });
+    };
+    updateAngleScaredY(player, objects){
+        this.dx = this.x - player.x;
+        this.dy = this.y - player.y;
+        this.distance = Math.sqrt((this.dx*this.dx) + (this.dy*this.dy));
+        this.angle = Math.atan2(this.dy,this.dx);
+        this.y += Math.sin(this.angle) * this.speedY;
+        objects.forEach(object => {
             if (this.dead === false || object.gate === false){
                 if (this.checkcollision(object)) {
                     if (this.dx > 0){
@@ -220,11 +275,38 @@ class Enemy extends Player {
             };
         });
     };
+    scare(player, objects){
+        this.updateAngleScaredX(player, objects);
+        this.updateAngleScaredY(player, objects);
+    };
+    transportHome (){
+        this.x = 480;
+        this.y = 290;
+    };
     death(objects){
-        box = new Player("", 480, 290);
-        this.updateAngleX(box, objects);
-        this.updateAngleY(box, objects);
-    }
+        outOfBox = new Player("", 480, 224);
+        if (this.x > 481 || this.x < 479 || this.y > 225 || this.y < 223){
+            this.img = vaccineImgDeath;
+            this.draw();
+            this.speedX = 0.8;
+            this.speedY = 0.8;
+            this.updateAngleX(outOfBox, objects);
+            this.updateAngleY(outOfBox, objects);
+        } else if (this.x <= 481 || this.x >= 479 || this.y <= 225 || this.y >= 223){
+            this.transportHome();
+        };
+        if (this.x <= 481 && this.x >= 479 && this.y <= 291 && this.y >= 289){
+            this.img = vaccineImg;
+            this.draw();
+            points += 300;
+            this.dead = false;
+            this.scared = false;
+            this.home = true;
+            pointsRestart = 0;
+            this.speedX = 0.4;
+            this.speedY = 0.4;
+        };
+    };
 };
 
 const outerWallThickness = 10;
@@ -285,7 +367,7 @@ const walls = [
     new Wall(360, 270, 115, 10, "blue", false),
     new Wall(525, 270, 115, 10, "blue", false),
     new Wall(474, 270, 50, 10, "yellow", true),
-    new Wall(360, 340, 280, 10, "blue", false),
+    new Wall(360, 340, 280, 10, "blue", false)
 ];
 const specialCollects = [
     new Collectable(mutationImg, 20, 60, 30, 30),
@@ -612,6 +694,18 @@ function updateGameArea() {
         specialCollect.checkcollision(mainPlayer);
         specialCollect.collect(mainPlayer);
         specialCollect.updateScore(mainPlayer, 2000);
+        if (specialCollect.mutate === true){
+            enemies.forEach(enemy => {
+                enemy.scared = true;
+            });
+            //Time in which enemies can be killed and run away
+            setTimeout(() => {
+                enemies.forEach(enemy => {
+                    enemy.scared = false;
+                });
+                specialCollect.mutate = false;
+            }, 8000);
+        };
     });
     collects.forEach(collect => {
         if (collect.collected === false){
@@ -652,14 +746,20 @@ function updateGameArea() {
         enemies.forEach(enemyClon => {
             enemyClon.checkcollision(enemy);
         })
-        if (pointsRestart >= 2500){
+        if (pointsRestart >= 10){
             if(enemies[0].home === true){
                 enemies[0].x = 480;
                 enemies[0].y = 230;
                 enemies[0].home = false;
             };
-            enemies[0].updateAngleX(mainPlayer, walls);
-            enemies[0].updateAngleY(mainPlayer, walls);
+            if (enemies[0].scared === true && enemies[0].dead === false){
+                enemies[0].scare(mainPlayer, walls);
+            } else if (enemies[0].scared === false && enemies[0].dead === false){
+                enemies[0].updateAngleX(mainPlayer, walls);
+                enemies[0].updateAngleY(mainPlayer, walls);
+            } else if (enemies[0].dead === true){
+                enemies[0].death(walls);
+            };
         };
         if (pointsRestart >= 5000){
             if(enemies[1].home === true){
@@ -667,8 +767,12 @@ function updateGameArea() {
                 enemies[1].y = 230;
                 enemies[1].home = false;
             };
-            enemies[1].updateAngleX(mainPlayer, walls);
-            enemies[1].updateAngleY(mainPlayer, walls);
+            if (enemies[1].scared === true && enemies[1] === false){
+                enemies[1].scare(mainPlayer, walls);
+            } else if (enemies[1].scared === false && enemies[1].dead === false) {
+                enemies[1].updateAngleX(mainPlayer, walls);
+                enemies[1].updateAngleY(mainPlayer, walls);
+            };
         };
         if (pointsRestart >= 7500){
             if(enemies[2].home === true){
@@ -676,8 +780,12 @@ function updateGameArea() {
                 enemies[2].y = 230;
                 enemies[2].home = false;
             };
-            enemies[2].updateAngleX(mainPlayer, walls);
-            enemies[2].updateAngleY(mainPlayer, walls);
+            if (enemies[2].scared === true && enemies[2].dead === false){
+                enemies[2].scare(mainPlayer, walls);
+            } else if (enemies[2].scared === false && enemies[2].dead === false) {
+                enemies[2].updateAngleX(mainPlayer, walls);
+                enemies[2].updateAngleY(mainPlayer, walls);
+            };
         };
         if (pointsRestart >= 10000){
             if(enemies[3].home === true){
@@ -685,8 +793,12 @@ function updateGameArea() {
                 enemies[3].y = 230;
                 enemies[3].home = false;
             };
-            enemies[3].updateAngleX(mainPlayer, walls);
-            enemies[3].updateAngleY(mainPlayer, walls);
+            if (enemies[3].scared === true && enemies[3].dead === false){
+                enemies[3].scare(mainPlayer, walls);
+            } else if (enemies[3].scared === false && enemies[3].dead === false) {
+                enemies[3].updateAngleX(mainPlayer, walls);
+                enemies[3].updateAngleY(mainPlayer, walls);
+            };
         };
         //Winning
         if (points >= 18600){
@@ -711,39 +823,42 @@ function updateGameArea() {
             clearInterval(intervalId);
         }
         if (mainPlayer.checkcollision(enemy)){
-            lives--;
-            pointsRestart = 0;
-            upArrow = false;
-            downArrow = false;
-            leftArrow = false;
-            rightArrow = false;
-            if (lives < 0){
-                gameOverScreen.style.display = 'block';
-                mycanvas.style.display = 'none';
-                //Restart variables
-                specialCollects.forEach(specialCollect => {
-                    specialCollect.collected = false;
-                    specialCollect.notScored = true;
-                });
-                collects.forEach(collect => {
-                    collect.collected = false;
-                    collect.notScored = true;
-                });
-                lives = 2;
-                points = 0;
+            if (enemies[0].scared === true){
+                enemies[0].dead = true;
+            } else {
+                lives--;
                 pointsRestart = 0;
                 upArrow = false;
                 downArrow = false;
                 leftArrow = false;
                 rightArrow = false;
-                clearInterval(intervalId);
-            } else {
-                clearInterval(intervalId);
-                restart();
-            }
-        }
-        /* enemy.dead = true;
-        enemy.death(walls); */
+                enemy.scared = false;
+                if (lives < 0){
+                    gameOverScreen.style.display = 'block';
+                    mycanvas.style.display = 'none';
+                    //Restart variables
+                    specialCollects.forEach(specialCollect => {
+                        specialCollect.collected = false;
+                        specialCollect.notScored = true;
+                    });
+                    collects.forEach(collect => {
+                        collect.collected = false;
+                        collect.notScored = true;
+                    });
+                    lives = 2;
+                    points = 0;
+                    pointsRestart = 0;
+                    upArrow = false;
+                    downArrow = false;
+                    leftArrow = false;
+                    rightArrow = false;
+                    clearInterval(intervalId);
+                } else {
+                    clearInterval(intervalId);
+                    restart();
+                };
+            };
+        };
     });
 };
 function restart(){
