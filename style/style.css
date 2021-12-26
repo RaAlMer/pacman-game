@@ -25,6 +25,10 @@ body {
     animation-duration: 3s;
     animation-iteration-count: infinite;
 }
+.play-btn-start:active {
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+}
 @keyframes changeColor {
     0% {
       background: #F8DF01;
@@ -125,6 +129,10 @@ li {
     animation-duration: 3s;
     animation-iteration-count: infinite;
 }
+.play-btn:active {
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+}
 #bacteria {
     transform: rotate(100deg);
     height: 200px;
@@ -191,6 +199,10 @@ li {
     animation-name: changeColor;
     animation-duration: 3s;
     animation-iteration-count: infinite;
+}
+.play-btn-next:active {
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
 }
 #win-page {
     display: none;
