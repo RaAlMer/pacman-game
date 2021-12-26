@@ -791,11 +791,29 @@ function updateGameArea() {
             };
             if (enemies[0].scared === true && enemies[0].dead === false){
                 enemies[0].scare(mainPlayer, walls);
+                if (enemies[0].x >= 976){
+                    enemies[0].x = 0;
+                };
+                if (enemies[0].x <= 0){
+                    enemies[0].x = 975;
+                };
             } else if (enemies[0].scared === false && enemies[0].dead === false){
                 enemies[0].updateAngleX(mainPlayer, walls);
                 enemies[0].updateAngleY(mainPlayer, walls);
+                if (enemies[0].x >= 976){
+                    enemies[0].x = 0;
+                };
+                if (enemies[0].x <= 0){
+                    enemies[0].x = 975;
+                };
             } else if (enemies[0].dead === true){
                 enemies[0].death(walls);
+                if (enemies[0].x >= 976){
+                    enemies[0].x = 0;
+                };
+                if (enemies[0].x <= 0){
+                    enemies[0].x = 975;
+                };
             };
         };
         if (pointsRestart >= 5000 || enemies[1].home === false){
@@ -806,11 +824,29 @@ function updateGameArea() {
             };
             if (enemies[1].scared === true && enemies[1].dead === false){
                 enemies[1].scare(mainPlayer, walls);
+                if (enemies[1].x >= 976){
+                    enemies[1].x = 0;
+                };
+                if (enemies[1].x <= 0){
+                    enemies[1].x = 975;
+                };
             } else if (enemies[1].scared === false && enemies[1].dead === false) {
                 enemies[1].updateAngleX(mainPlayer, walls);
                 enemies[1].updateAngleY(mainPlayer, walls);
+                if (enemies[1].x >= 976){
+                    enemies[1].x = 0;
+                };
+                if (enemies[1].x <= 0){
+                    enemies[1].x = 975;
+                };
             } else if (enemies[1].dead === true){
                 enemies[1].death(walls);
+                if (enemies[1].x >= 976){
+                    enemies[1].x = 0;
+                };
+                if (enemies[1].x <= 0){
+                    enemies[1].x = 975;
+                };
             };
         };
         if (pointsRestart >= 7500 || enemies[2].home === false){
@@ -821,11 +857,29 @@ function updateGameArea() {
             };
             if (enemies[2].scared === true && enemies[2].dead === false){
                 enemies[2].scare(mainPlayer, walls);
+                if (enemies[2].x >= 976){
+                    enemies[2].x = 0;
+                };
+                if (enemies[2].x <= 0){
+                    enemies[2].x = 975;
+                };
             } else if (enemies[2].scared === false && enemies[2].dead === false) {
                 enemies[2].updateAngleX(mainPlayer, walls);
                 enemies[2].updateAngleY(mainPlayer, walls);
+                if (enemies[2].x >= 976){
+                    enemies[2].x = 0;
+                };
+                if (enemies[2].x <= 0){
+                    enemies[2].x = 975;
+                };
             }else if (enemies[2].dead === true){
                 enemies[2].death(walls);
+                if (enemies[2].x >= 976){
+                    enemies[2].x = 0;
+                };
+                if (enemies[2].x <= 0){
+                    enemies[2].x = 975;
+                };
             };
         };
         if (pointsRestart >= 10000 || enemies[3].home === false){
@@ -836,11 +890,29 @@ function updateGameArea() {
             };
             if (enemies[3].scared === true && enemies[3].dead === false){
                 enemies[3].scare(mainPlayer, walls);
+                if (enemies[3].x >= 976){
+                    enemies[3].x = 0;
+                };
+                if (enemies[3].x <= 0){
+                    enemies[3].x = 975;
+                };
             } else if (enemies[3].scared === false && enemies[3].dead === false) {
                 enemies[3].updateAngleX(mainPlayer, walls);
                 enemies[3].updateAngleY(mainPlayer, walls);
+                if (enemies[3].x >= 976){
+                    enemies[3].x = 0;
+                };
+                if (enemies[3].x <= 0){
+                    enemies[3].x = 975;
+                };
             } else if (enemies[3].dead === true){
                 enemies[3].death(walls);
+                if (enemies[3].x >= 976){
+                    enemies[3].x = 0;
+                };
+                if (enemies[3].x <= 0){
+                    enemies[3].x = 975;
+                };
             };
         };
         //Winning
