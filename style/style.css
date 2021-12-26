@@ -133,6 +133,45 @@ li {
     margin-top: 500px;
     margin-left: 840px;
 }
+#high-score-page {
+    display: none;
+    background-color: black;
+    width: 1000px;
+    height: 700px;
+}
+#high-score-page h1 {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 1000px;
+    padding-top: 20px;
+    color: #F8DF01;
+}
+#high-score-page ol {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 1000px;
+    padding-top: 40px;
+    font-size: 32px;
+}
+.play-btn-next{
+    border-radius: 50%;
+    color: #ffffff;
+    font-size: 32px;
+    font-weight: 800;
+    background: #F8DF01;
+    padding: 50px 20px 50px 20px;
+    border: solid #fff 5px;
+    text-decoration: none;
+    margin-top: 6px;
+    cursor: pointer;
+    -webkit-text-stroke: 2px black;
+    letter-spacing: 1px;
+    margin-left: 400px;
+}
 #win-page {
     display: none;
     background-color: black;

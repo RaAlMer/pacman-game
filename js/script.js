@@ -2,6 +2,7 @@
 let splashScreen = document.getElementById('start-page');
 let playBtnStart = document.querySelectorAll('.play-btn-start');
 let playBtn = document.querySelectorAll('.play-btn');
+let playBtnNext = document.querySelectorAll('.play-btn-next');
 let gameOverScreen = document.getElementById('game-over-page');
 let selectPlayerScreen = document.getElementById('select-player-page');
 let virusBtn = document.getElementById('virusPlayer');
@@ -10,6 +11,8 @@ let nanovirusBtn = document.getElementById('nanovirusPlayer');
 let protozoaBtn = document.getElementById('protozoaPlayer');
 let gameoverImg = document.getElementById('virus-gameover');
 let winScreen = document.getElementById('win-page');
+let highScoreList = document.getElementById('highScoreTable');
+let highScoreScreen = document.getElementById('high-score-page');
 
 //Variables
 let pickedPathogen = null;
@@ -24,6 +27,9 @@ let pointsRestart = 0;
 let lives = 2;
 let enemies = [];
 let outOfBox = 0;
+let highScores = [];
+let namePlayer = "";
+let gameOver = false;
 
 //Images
 //Classes
@@ -52,7 +58,7 @@ vaccineImgDeath.src = "../images/vaccineDead.png";
 const mycanvas = document.getElementById('my-canvas');
 let ctx = mycanvas.getContext('2d');
 
-//Walls
+//Classes
 class Wall {
     constructor(x, y, width, height, color, gate){
         this.x = x;
@@ -292,7 +298,7 @@ class Enemy extends Player {
             this.speedY = 0.8;
             this.updateAngleX(outOfBox, objects);
             this.updateAngleY(outOfBox, objects);
-        } else if (this.x <= 481 || this.x >= 479 || this.y <= 225 || this.y >= 223){
+        } else if (this.x <= 481 && this.x >= 479 && this.y <= 225 && this.y >= 223){
             this.transportHome();
         };
         if (this.x <= 481 && this.x >= 479 && this.y <= 291 && this.y >= 289){
@@ -309,6 +315,7 @@ class Enemy extends Player {
     };
 };
 
+//Walls
 const outerWallThickness = 10;
 const walls = [
     //Outer walls
@@ -369,6 +376,7 @@ const walls = [
     new Wall(474, 270, 50, 10, "yellow", true),
     new Wall(360, 340, 280, 10, "blue", false)
 ];
+// Collectables
 const specialCollects = [
     new Collectable(mutationImg, 20, 60, 30, 30),
     new Collectable(mutationImg, 950, 60, 30, 30),
@@ -589,6 +597,21 @@ const collects = [
     new Collectable(humanImg, 770, 360, 15, 20),
     new Collectable(humanImg, 770, 400, 15, 20)
 ];
+// Highscores
+highScores = [
+    {
+        name: 'EEE',
+        score: 00000
+    },
+    {
+        name: 'LLL',
+        score: 00000
+    },
+    {
+        name: 'III',
+        score: 00000
+    }
+];
 
 //Event listener
 document.addEventListener("keydown", (event) => {
@@ -624,9 +647,24 @@ playBtnStart.forEach(e => {
         //Display page
         splashScreen.style.display = 'none';
         gameOverScreen.style.display = 'none';
+        winScreen.style.display = 'none';
         selectPlayerScreen.style.display = 'block';
+        gameOver = false;
     });
-})
+});
+playBtnNext.forEach(e => {
+    e.addEventListener('click', () => {
+        if (gameOver === true){
+            highScoreScreen.style.display = 'none';
+            splashScreen.style.display = 'none';
+            gameOverScreen.style.display = 'block';
+        } else {
+            highScoreScreen.style.display = 'none';
+            splashScreen.style.display = 'none';
+            winScreen.style.display = 'block';
+        };
+    });
+});
 virusBtn.addEventListener('click', () => {
     pickedPathogen = 'virusPl';
 });
@@ -664,11 +702,13 @@ playBtn.forEach(e => {
                 new Enemy(vaccineImg, 520, 290),
                 new Enemy(vaccineImg, 580, 290)
             ];
+            gameOver = false;
             //Display page
             splashScreen.style.display = 'none';
             gameOverScreen.style.display = 'none';
             selectPlayerScreen.style.display = 'none';
             winScreen.style.display = 'none';
+            highScoreScreen.style.display = 'none';
             mycanvas.style.display = 'block';
             //Start game
             intervalId = setInterval(() => {
@@ -743,10 +783,7 @@ function updateGameArea() {
         walls.forEach(wall => {
             enemy.checkcollision(wall);
         });
-        enemies.forEach(enemyClon => {
-            enemyClon.checkcollision(enemy);
-        })
-        if (pointsRestart >= 10){
+        if (pointsRestart >= 2500 || enemies[0].home === false){
             if(enemies[0].home === true){
                 enemies[0].x = 480;
                 enemies[0].y = 230;
@@ -761,20 +798,22 @@ function updateGameArea() {
                 enemies[0].death(walls);
             };
         };
-        if (pointsRestart >= 5000){
+        if (pointsRestart >= 5000 || enemies[1].home === false){
             if(enemies[1].home === true){
                 enemies[1].x = 480;
                 enemies[1].y = 230;
                 enemies[1].home = false;
             };
-            if (enemies[1].scared === true && enemies[1] === false){
+            if (enemies[1].scared === true && enemies[1].dead === false){
                 enemies[1].scare(mainPlayer, walls);
             } else if (enemies[1].scared === false && enemies[1].dead === false) {
                 enemies[1].updateAngleX(mainPlayer, walls);
                 enemies[1].updateAngleY(mainPlayer, walls);
+            } else if (enemies[1].dead === true){
+                enemies[1].death(walls);
             };
         };
-        if (pointsRestart >= 7500){
+        if (pointsRestart >= 7500 || enemies[2].home === false){
             if(enemies[2].home === true){
                 enemies[2].x = 480;
                 enemies[2].y = 230;
@@ -785,9 +824,11 @@ function updateGameArea() {
             } else if (enemies[2].scared === false && enemies[2].dead === false) {
                 enemies[2].updateAngleX(mainPlayer, walls);
                 enemies[2].updateAngleY(mainPlayer, walls);
+            }else if (enemies[2].dead === true){
+                enemies[2].death(walls);
             };
         };
-        if (pointsRestart >= 10000){
+        if (pointsRestart >= 10000 || enemies[3].home === false){
             if(enemies[3].home === true){
                 enemies[3].x = 480;
                 enemies[3].y = 230;
@@ -798,11 +839,14 @@ function updateGameArea() {
             } else if (enemies[3].scared === false && enemies[3].dead === false) {
                 enemies[3].updateAngleX(mainPlayer, walls);
                 enemies[3].updateAngleY(mainPlayer, walls);
+            } else if (enemies[3].dead === true){
+                enemies[3].death(walls);
             };
         };
         //Winning
         if (points >= 18600){
-            winScreen.style.display = 'block';
+            updateHighScores();
+            highScoreScreen.style.display = 'block';
             mycanvas.style.display = 'none';
             //Restart variables
             specialCollects.forEach(specialCollect => {
@@ -820,12 +864,31 @@ function updateGameArea() {
             downArrow = false;
             leftArrow = false;
             rightArrow = false;
+            gameOver = false;
             clearInterval(intervalId);
         }
-        if (mainPlayer.checkcollision(enemy)){
+        if (mainPlayer.checkcollision(enemies[0])){
             if (enemies[0].scared === true){
                 enemies[0].dead = true;
-            } else {
+            };
+        };
+        if (mainPlayer.checkcollision(enemies[1])){
+            if (enemies[1].scared === true){
+                enemies[1].dead = true;
+            };
+        };
+        if (mainPlayer.checkcollision(enemies[2])){
+            if (enemies[2].scared === true){
+                enemies[2].dead = true;
+            };
+        };
+        if (mainPlayer.checkcollision(enemies[3])){
+            if (enemies[3].scared === true){
+                enemies[3].dead = true;
+            };
+        };
+        if (mainPlayer.checkcollision(enemy)){
+            if (enemy.scared === false) {
                 lives--;
                 pointsRestart = 0;
                 upArrow = false;
@@ -834,7 +897,9 @@ function updateGameArea() {
                 rightArrow = false;
                 enemy.scared = false;
                 if (lives < 0){
-                    gameOverScreen.style.display = 'block';
+                    gameOver = true;
+                    updateHighScores();
+                    highScoreScreen.style.display = 'block';
                     mycanvas.style.display = 'none';
                     //Restart variables
                     specialCollects.forEach(specialCollect => {
@@ -881,6 +946,7 @@ function restart(){
             new Enemy(vaccineImg, 520, 290),
             new Enemy(vaccineImg, 580, 290)
         ];
+        gameOver = false;
         //Display page
         splashScreen.style.display = 'none';
         gameOverScreen.style.display = 'none';
@@ -894,8 +960,27 @@ function restart(){
     };
 };
 
+function saveHighScore(index) {
+    namePlayer = prompt("WHAT'S YOUR NAME PLAYER?");
+    highScores.splice(index, 0 , {
+        name: namePlayer.slice(0, 7).toUpperCase(),
+        score: points
+    });
+    highScores.pop();
+};
 
-// Run
-/* window.addEventListener('load', () => {
-    splashScreen.style.display = 'block';
-}); */
+function updateHighScores() {
+    if (points >= highScores[0].score) {
+        saveHighScore(0);
+    } else if (points >= highScores[1].score) {
+        saveHighScore(1);
+    } else if (points >= highScores[2].score) {
+        saveHighScore(2);
+    };
+    highScoreList.innerHTML = ''
+    highScores.forEach((elem) => {
+        let li = document.createElement('li');
+        li.innerHTML = `${elem.name} - ${elem.score}`;
+        highScoreList.appendChild(li);
+    });
+};
