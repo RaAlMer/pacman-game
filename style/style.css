@@ -21,7 +21,21 @@ body {
     cursor: pointer;
     -webkit-text-stroke: 2px black;
     letter-spacing: 1px;
+    animation-name: changeColor;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
 }
+@keyframes changeColor {
+    0% {
+      background: #F8DF01;
+    }
+    50% {
+      background: #CC6600;
+    }
+    100% {
+      background: #F8DF01;
+    }
+  }
 #bg-img {
     width: 1000px;
     height: 700px;
@@ -107,6 +121,9 @@ li {
     cursor: pointer;
     -webkit-text-stroke: 2px black;
     letter-spacing: 1px;
+    animation-name: changeColor;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
 }
 #bacteria {
     transform: rotate(100deg);
@@ -171,6 +188,9 @@ li {
     -webkit-text-stroke: 2px black;
     letter-spacing: 1px;
     margin-left: 400px;
+    animation-name: changeColor;
+    animation-duration: 3s;
+    animation-iteration-count: infinite;
 }
 #win-page {
     display: none;
