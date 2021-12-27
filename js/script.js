@@ -53,10 +53,11 @@ const vaccineImgDeath = new Image();
 vaccineImgDeath.src = "../images/vaccineDead.png";
 
 //Audios
-let playerMoving = new Audio('../audios/player_moving.mp3');
+//let playerMovingAudio = new Audio('../audios/player_moving.mp3');
 let backgroundMusic = new Audio('../audios/arcade_music.wav');
-let losingLife = new Audio('../audios/lifeLostPlayer.wav');
-let mutationCollectAudio = new Audio('../audios/mutation_sound.wav');
+let losingLifeAudio = new Audio('../audios/lifeLostPlayer.wav');
+//let mutationCollectAudio = new Audio('../audios/mutation_sound.wav');
+let gameStartBtnAudio = new Audio('../audios/game_start.wav');
 
 //Canvas
 const mycanvas = document.getElementById('my-canvas');
@@ -648,6 +649,8 @@ document.addEventListener("keydown", (event) => {
 });
 playBtnStart.forEach(e => {
     e.addEventListener('click', () => {
+        //Audios
+        gameStartBtnAudio.play();
         //Display page
         splashScreen.style.display = 'none';
         gameOverScreen.style.display = 'none';
@@ -659,10 +662,16 @@ playBtnStart.forEach(e => {
 playBtnNext.forEach(e => {
     e.addEventListener('click', () => {
         if (gameOver === true){
+            //Audios
+            gameStartBtnAudio.play();
+            // Display page
             highScoreScreen.style.display = 'none';
             splashScreen.style.display = 'none';
             gameOverScreen.style.display = 'block';
         } else {
+            //Audios
+            gameStartBtnAudio.play();
+            //Display page
             highScoreScreen.style.display = 'none';
             splashScreen.style.display = 'none';
             winScreen.style.display = 'block';
@@ -717,6 +726,7 @@ playBtn.forEach(e => {
             //Sound
             backgroundMusic.play();
             backgroundMusic.volume = 0.05;
+            gameStartBtnAudio.play();
             //Start game
             intervalId = setInterval(() => {
                 requestAnimationFrame(updateGameArea);
@@ -782,20 +792,12 @@ function updateGameArea() {
     mainPlayer.draw();
     if(upArrow){
         mainPlayer.moveUp(walls);
-        playerMoving.play();
-        playerMoving.volume = 0.05;
     } else if(downArrow){
         mainPlayer.moveDown(walls);
-        playerMoving.play();
-        playerMoving.volume = 0.05;
     } else if(leftArrow){
         mainPlayer.moveLeft(walls);
-        playerMoving.play();
-        playerMoving.volume = 0.05;
     } else if(rightArrow){
         mainPlayer.moveRight(walls);
-        playerMoving.play();
-        playerMoving.volume = 0.05;
     };
     walls.forEach(wall => {
         mainPlayer.checkcollision(wall);
@@ -985,7 +987,7 @@ function updateGameArea() {
         };
         if (mainPlayer.checkcollision(enemy)){
             if (enemy.scared === false) {
-                losingLife.play();
+                losingLifeAudio.play();
                 lives--;
                 pointsRestart = 0;
                 upArrow = false;
