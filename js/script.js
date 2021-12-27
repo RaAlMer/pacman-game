@@ -53,6 +53,10 @@ const vaccineImgDeath = new Image();
 vaccineImgDeath.src = "../images/vaccineDead.png";
 
 //Audios
+let playerMoving = new Audio('../audios/player_moving.mp3');
+let backgroundMusic = new Audio('../audios/arcade_music.wav');
+let losingLife = new Audio('../audios/lifeLostPlayer.wav');
+let mutationCollectAudio = new Audio('../audios/mutation_sound.wav');
 
 //Canvas
 const mycanvas = document.getElementById('my-canvas');
@@ -710,6 +714,9 @@ playBtn.forEach(e => {
             winScreen.style.display = 'none';
             highScoreScreen.style.display = 'none';
             mycanvas.style.display = 'block';
+            //Sound
+            backgroundMusic.play();
+            backgroundMusic.volume = 0.05;
             //Start game
             intervalId = setInterval(() => {
                 requestAnimationFrame(updateGameArea);
@@ -719,8 +726,16 @@ playBtn.forEach(e => {
 });
 
 //Functions
+function startSplashScreen(){
+    splashScreen.style.display = 'block';
+    backgroundMusic.play();
+    backgroundMusic.volume = 0.05;
+}
 function updateGameArea() {
     ctx.clearRect(0, 0, mycanvas.width, mycanvas.height);
+    //Adding audio
+    backgroundMusic.play();
+    backgroundMusic.volume = 0.05;
     //Canvas definition
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, mycanvas.width, mycanvas.height);
@@ -767,12 +782,20 @@ function updateGameArea() {
     mainPlayer.draw();
     if(upArrow){
         mainPlayer.moveUp(walls);
+        playerMoving.play();
+        playerMoving.volume = 0.05;
     } else if(downArrow){
         mainPlayer.moveDown(walls);
+        playerMoving.play();
+        playerMoving.volume = 0.05;
     } else if(leftArrow){
         mainPlayer.moveLeft(walls);
+        playerMoving.play();
+        playerMoving.volume = 0.05;
     } else if(rightArrow){
         mainPlayer.moveRight(walls);
+        playerMoving.play();
+        playerMoving.volume = 0.05;
     };
     walls.forEach(wall => {
         mainPlayer.checkcollision(wall);
@@ -917,6 +940,7 @@ function updateGameArea() {
         };
         //Winning
         if (points >= 18600){
+            backgroundMusic.pause();
             updateHighScores();
             highScoreScreen.style.display = 'block';
             mycanvas.style.display = 'none';
@@ -961,6 +985,7 @@ function updateGameArea() {
         };
         if (mainPlayer.checkcollision(enemy)){
             if (enemy.scared === false) {
+                losingLife.play();
                 lives--;
                 pointsRestart = 0;
                 upArrow = false;
@@ -968,8 +993,10 @@ function updateGameArea() {
                 leftArrow = false;
                 rightArrow = false;
                 enemy.scared = false;
+                backgroundMusic.pause();
                 if (lives < 0){
                     gameOver = true;
+                    backgroundMusic.pause();
                     updateHighScores();
                     highScoreScreen.style.display = 'block';
                     mycanvas.style.display = 'none';
@@ -1056,3 +1083,8 @@ function updateHighScores() {
         highScoreList.appendChild(li);
     });
 };
+
+//Run game
+window.addEventListener('load', () => {
+    startSplashScreen();
+});

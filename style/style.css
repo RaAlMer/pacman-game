@@ -6,7 +6,7 @@ body {
 }
 #start-page{
     z-index: -1;
-    display: block;
+    display: none;
 }
 .play-btn-start{
     border-radius: 50%;
@@ -110,7 +110,7 @@ li {
     width: 160px;
 }
 #select-player-page .play-btn {
-    margin-left: 360px;
+    margin-left: 410px;
 }
 .play-btn{
     border-radius: 50%;
