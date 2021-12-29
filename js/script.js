@@ -121,6 +121,7 @@ class Collectable {
                 pointsRestart += score;
                 this.notScored = false;
                 playerMovingAudio.play();
+                playerMovingAudio.volume = 0.6;
             }
         }
     };
@@ -736,7 +737,7 @@ playBtn.forEach(e => {
             mycanvas.style.display = 'block';
             //Sound
             backgroundMusic.play();
-            backgroundMusic.volume = 0.05;
+            backgroundMusic.volume = 0.2;
             gameStartBtnAudio.play();
             //Start game
             intervalId = setInterval(() => {
@@ -750,13 +751,13 @@ playBtn.forEach(e => {
 function startSplashScreen(){
     splashScreen.style.display = 'block';
     backgroundMusic.play();
-    backgroundMusic.volume = 0.05;
+    backgroundMusic.volume = 0.2;
 }
 function updateGameArea() {
     ctx.clearRect(0, 0, mycanvas.width, mycanvas.height);
     //Adding audio
     backgroundMusic.play();
-    backgroundMusic.volume = 0.05;
+    backgroundMusic.volume = 0.2;
     //Canvas definition
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, mycanvas.width, mycanvas.height);
