@@ -58,9 +58,9 @@ let losingLifeAudio = new Audio('../audios/lifeLostPlayer.wav');
 let gameStartBtnAudio = new Audio('../audios/game_start.wav');
 let gameOverAudio = new Audio('../audios/game_over.wav');
 let winAudio = new Audio('../audios/win_sound.mp3');
-let ghostNotScaredAudio = new Audio('../audios/ghostScaredFalse.wav');
-//let playerMovingAudio = new Audio('../audios/player_moving.mp3');
-//let mutationCollectAudio = new Audio('../audios/mutation_sound.wav');
+let playerMovingAudio = new Audio('../audios/player_moving.mp3');
+let playerSelect = new Audio('../audios/player_select.mp3');
+let ghostScared = new Audio('../audios/ghostScaredFalse.wav');
 
 //Canvas
 const mycanvas = document.getElementById('my-canvas');
@@ -108,6 +108,7 @@ class Collectable {
     collect(object){
         if (this.checkcollision(object)) {
             this.collected = true;
+            ctx.clearRect(this.x, this.y, this.width, this.height);
             ctx.fillStyle = "black";
             ctx.fillRect(this.x, this.y, this.width, this.height);
             this.mutate = true;
@@ -119,6 +120,7 @@ class Collectable {
                 points += score;
                 pointsRestart += score;
                 this.notScored = false;
+                playerMovingAudio.play();
             }
         }
     };
@@ -685,15 +687,19 @@ playBtnNext.forEach(e => {
 });
 virusBtn.addEventListener('click', () => {
     pickedPathogen = 'virusPl';
+    playerSelect.play();
 });
 bacteriaBtn.addEventListener('click', () => {
     pickedPathogen = 'bacteriaPl';
+    playerSelect.play();
 });
 nanovirusBtn.addEventListener('click', () => {
     pickedPathogen = 'nanovirusPl';
+    playerSelect.play();
 });
 protozoaBtn.addEventListener('click', () => {
     pickedPathogen = 'protozoaPl';
+    playerSelect.play();
 });
 playBtn.forEach(e => {
     e.addEventListener('click', () => {
@@ -768,11 +774,11 @@ function updateGameArea() {
             enemies.forEach(enemy => {
                 enemy.scared = true;
             });
+            ghostScared.play();
             //Time in which enemies can be killed and run away
             setTimeout(() => {
                 enemies.forEach(enemy => {
                     enemy.scared = false;
-                    ghostNotScaredAudio.play();
                 });
                 specialCollect.mutate = false;
             }, 8000);
