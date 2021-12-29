@@ -53,11 +53,14 @@ const vaccineImgDeath = new Image();
 vaccineImgDeath.src = "../images/vaccineDead.png";
 
 //Audios
-//let playerMovingAudio = new Audio('../audios/player_moving.mp3');
 let backgroundMusic = new Audio('../audios/arcade_music.wav');
 let losingLifeAudio = new Audio('../audios/lifeLostPlayer.wav');
-//let mutationCollectAudio = new Audio('../audios/mutation_sound.wav');
 let gameStartBtnAudio = new Audio('../audios/game_start.wav');
+let gameOverAudio = new Audio('../audios/game_over.wav');
+let winAudio = new Audio('../audios/win_sound.mp3');
+let ghostNotScaredAudio = new Audio('../audios/ghostScaredFalse.wav');
+//let playerMovingAudio = new Audio('../audios/player_moving.mp3');
+//let mutationCollectAudio = new Audio('../audios/mutation_sound.wav');
 
 //Canvas
 const mycanvas = document.getElementById('my-canvas');
@@ -664,6 +667,7 @@ playBtnNext.forEach(e => {
         if (gameOver === true){
             //Audios
             gameStartBtnAudio.play();
+            gameOverAudio.play();
             // Display page
             highScoreScreen.style.display = 'none';
             splashScreen.style.display = 'none';
@@ -671,6 +675,7 @@ playBtnNext.forEach(e => {
         } else {
             //Audios
             gameStartBtnAudio.play();
+            winAudio.play();
             //Display page
             highScoreScreen.style.display = 'none';
             splashScreen.style.display = 'none';
@@ -767,6 +772,7 @@ function updateGameArea() {
             setTimeout(() => {
                 enemies.forEach(enemy => {
                     enemy.scared = false;
+                    ghostNotScaredAudio.play();
                 });
                 specialCollect.mutate = false;
             }, 8000);
