@@ -31,6 +31,10 @@ let highScores = [];
 let namePlayer = "";
 let gameOver = false;
 
+let mainPlayerBoss = 0;
+let intervalBoss = 0;
+let shooting = [];
+
 //Images
 //Classes
 const virusImg = new Image();
@@ -51,6 +55,10 @@ const vaccineImg = new Image();
 vaccineImg.src = "../images/vaccine.png";
 const vaccineImgDeath = new Image();
 vaccineImgDeath.src = "../images/vaccineDead.png";
+//BossLevel
+//Shooting
+const shootingVirus = new Image();
+shootingVirus.src = '../images/shootingVirus.png';
 
 //Audios
 let backgroundMusic = new Audio('../audios/arcade_music.wav');
@@ -59,8 +67,9 @@ let gameStartBtnAudio = new Audio('../audios/game_start.wav');
 let gameOverAudio = new Audio('../audios/game_over.wav');
 let winAudio = new Audio('../audios/win_sound.mp3');
 let playerMovingAudio = new Audio('../audios/player_moving.mp3');
-let playerSelect = new Audio('../audios/player_select.mp3');
-let ghostScared = new Audio('../audios/ghostScaredFalse.wav');
+let playerSelectAudio = new Audio('../audios/player_select.mp3');
+let ghostScaredAudio = new Audio('../audios/ghostScaredFalse.wav');
+let bossLevelAudio = new Audio('../audios/bossLevelBg.wav');
 
 //Canvas
 const mycanvas = document.getElementById('my-canvas');
@@ -326,6 +335,50 @@ class Enemy extends Player {
     };
 };
 
+//Boss level classes
+class PlayerBoss extends Collectable {
+    constructor(img, x, y){
+        super(img, x, y);
+        this.width = 40;
+        this.height = 40;
+        this.speedX = 10;
+        this.speedY = 10;
+    };
+    moveRight(objects) {
+        this.x += this.speedX;
+        objects.forEach(object => {
+            if (this.checkcollision(object)) {
+                this.x -= this.speedX;
+            };
+        });
+      };
+    moveLeft() {
+        this.x -= this.speedX;
+        if (this.x <= 0){
+            this.x += this.speedX;
+        };
+    };
+    moveUp() {
+        this.y -= this.speedY;
+        if (this.y <= 400){
+            this.y += this.speedY;
+        };
+    };
+    moveDown() {
+        this.y += this.speedY;
+        if (this.y >= 670){
+            this.y -= this.speedY;
+        };
+    };
+};
+class Shoot extends Collectable{
+    constructor(img, x, y){
+        super(img, x, y);
+        this.width = 10;
+        this.height = 10;
+    };
+};
+
 //Walls
 const outerWallThickness = 10;
 const walls = [
@@ -387,6 +440,9 @@ const walls = [
     new Wall(474, 270, 50, 10, "yellow", true),
     new Wall(360, 340, 280, 10, "blue", false)
 ];
+const bossLevelWall = [
+    new Wall(mycanvas.width - outerWallThickness - 400, 0, outerWallThickness, mycanvas.height, "blue", false)
+]
 // Collectables
 const specialCollects = [
     new Collectable(mutationImg, 20, 60, 30, 30),
@@ -651,6 +707,9 @@ document.addEventListener("keydown", (event) => {
         leftArrow = false;
         rightArrow = true;
         break;
+      case 32:
+        //shootSound.play();
+        shooting.push(new Shoot(shootingVirus, mainPlayerBoss.x + 16, mainPlayerBoss.y));
     };
 });
 playBtnStart.forEach(e => {
@@ -688,19 +747,19 @@ playBtnNext.forEach(e => {
 });
 virusBtn.addEventListener('click', () => {
     pickedPathogen = 'virusPl';
-    playerSelect.play();
+    playerSelectAudio.play();
 });
 bacteriaBtn.addEventListener('click', () => {
     pickedPathogen = 'bacteriaPl';
-    playerSelect.play();
+    playerSelectAudio.play();
 });
 nanovirusBtn.addEventListener('click', () => {
     pickedPathogen = 'nanovirusPl';
-    playerSelect.play();
+    playerSelectAudio.play();
 });
 protozoaBtn.addEventListener('click', () => {
     pickedPathogen = 'protozoaPl';
-    playerSelect.play();
+    playerSelectAudio.play();
 });
 playBtn.forEach(e => {
     e.addEventListener('click', () => {
@@ -743,10 +802,9 @@ playBtn.forEach(e => {
             intervalId = setInterval(() => {
                 requestAnimationFrame(updateGameArea);
             }, 20);
-        }
+        };
     });
 });
-
 //Functions
 function startSplashScreen(){
     splashScreen.style.display = 'block';
@@ -775,7 +833,7 @@ function updateGameArea() {
             enemies.forEach(enemy => {
                 enemy.scared = true;
             });
-            ghostScared.play();
+            ghostScaredAudio.play();
             //Time in which enemies can be killed and run away
             setTimeout(() => {
                 enemies.forEach(enemy => {
@@ -977,7 +1035,7 @@ function updateGameArea() {
             rightArrow = false;
             gameOver = false;
             clearInterval(intervalId);
-        }
+        };
         if (mainPlayer.checkcollision(enemies[0])){
             if (enemies[0].scared === true){
                 enemies[0].dead = true;
@@ -1038,8 +1096,76 @@ function updateGameArea() {
                 };
             };
         };
+        //Boss level
+        if (points >= 100){
+            //Restart some variables
+            upArrow = false;
+            downArrow = false;
+            leftArrow = false;
+            rightArrow = false;
+            //Sound
+            backgroundMusic.pause();
+            playerMovingAudio.pause();
+            bossLevelAudio.play();
+            bossLevelAudio.volume = 0.6;            
+            //Player
+            if (pickedPathogen === 'virusPl'){
+                mainPlayerBoss = new PlayerBoss(virusImg, 480, mycanvas.height - 100);
+            } else if (pickedPathogen === 'bacteriaPl'){
+                mainPlayerBoss = new PlayerBoss(bacteriaImg, 480, mycanvas.height - 100);
+            } else if (pickedPathogen === 'nanovirusPl'){
+                mainPlayerBoss = new PlayerBoss(nanovirusImg, 480, mycanvas.height - 100);
+            } else if (pickedPathogen === 'protozoaPl'){
+                mainPlayerBoss = new PlayerBoss(protozoaImg, 480, mycanvas.height - 100);
+            };
+            //Enemies
+            enemies = [
+                new Enemy(vaccineImg, 460, 290),
+                new Enemy(vaccineImg, 400, 290),
+                new Enemy(vaccineImg, 520, 290),
+                new Enemy(vaccineImg, 580, 290)
+            ];
+            clearInterval(intervalId);
+            intervalBoss = setInterval(() => {
+                requestAnimationFrame(bossLevelArea);
+            }, 20);
+        };
     });
 };
+function bossLevelArea (){
+    //Canvas definition
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, mycanvas.width - 390, mycanvas.height);
+    //Wall
+    bossLevelWall.forEach((wall) => {
+        wall.draw();
+    });
+    //Player
+    mainPlayerBoss.draw();
+    mainPlayerBoss.speedX = 10;
+    mainPlayerBoss.speedY = 10;
+    if(upArrow){
+        mainPlayerBoss.moveUp();
+        upArrow = false;
+    } else if(downArrow){
+        mainPlayerBoss.moveDown();
+        downArrow = false;
+    } else if(leftArrow){
+        mainPlayerBoss.moveLeft();
+        leftArrow = false;
+    } else if(rightArrow){
+        mainPlayerBoss.moveRight(bossLevelWall);
+        rightArrow = false;
+    };
+    bossLevelWall.forEach(wall => {
+        mainPlayerBoss.checkcollision(wall);
+    });
+    //Shooting
+    shooting.forEach((shoot) => {
+        shoot.draw();
+        shoot.y -= 2;
+    });
+}
 function restart(){
     // Values
     if (pickedPathogen === null) {
@@ -1098,7 +1224,6 @@ function updateHighScores() {
         highScoreList.appendChild(li);
     });
 };
-
 //Run game
 window.addEventListener('load', () => {
     startSplashScreen();
