@@ -34,6 +34,8 @@ let gameOver = false;
 let mainPlayerBoss = 0;
 let intervalBoss = 0;
 let shooting = [];
+let bossEnemy = 0;
+let bossHealth = 360;
 
 //Images
 //Classes
@@ -59,6 +61,8 @@ vaccineImgDeath.src = "../images/vaccineDead.png";
 //Shooting
 const shootingVirus = new Image();
 shootingVirus.src = '../images/shootingVirus.png';
+const enemyDoctor = new Image();
+enemyDoctor.src = '../images/plagueDoctor.png';
 
 //Audios
 let backgroundMusic = new Audio('../audios/arcade_music.wav');
@@ -341,8 +345,8 @@ class PlayerBoss extends Collectable {
         super(img, x, y);
         this.width = 40;
         this.height = 40;
-        this.speedX = 10;
-        this.speedY = 10;
+        this.speedX = 15;
+        this.speedY = 15;
     };
     moveRight(objects) {
         this.x += this.speedX;
@@ -377,6 +381,46 @@ class Shoot extends Collectable{
         this.width = 10;
         this.height = 10;
     };
+};
+class Boss extends Collectable {
+    constructor(img, x, y){
+        super(img, x, y);
+        this.width = 300;
+        this.height = 300;
+        this.speedX = 1;
+        this.hit = false;
+    };
+    randomMovement(objects){
+        this.x -= this.speedX;
+        objects.forEach(object => {
+            if (this.x <= -10){
+                this.speedX *= -1;
+            } else if (this.checkcollision(object)){
+                this.speedX *= -1;
+            };
+        });
+    };
+    drawHealthBar() {
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = "white";
+        ctx.strokeRect(mycanvas.width - 380, mycanvas.height - 400, 360, 50);
+        ctx.fillStyle = "black";
+        ctx.fillRect(mycanvas.width - 380, mycanvas.height - 400, 360, 50);
+        if (bossHealth >= 252){
+            ctx.fillStyle = "green";
+        } else if (bossHealth >= 144){
+            ctx.fillStyle = "orange";
+        } else {
+            ctx.fillStyle = "red";
+        };
+        ctx.fillRect(mycanvas.width - 380, mycanvas.height - 400, bossHealth, 50);
+      };
+      decreaseHealth(){
+          if (this.hit === true){
+            bossHealth -= 30;
+            this.hit = false;
+          };
+      };
 };
 
 //Walls
@@ -679,138 +723,51 @@ highScores = [
         score: 00000
     }
 ];
-
-//Event listener
-document.addEventListener("keydown", (event) => {
-    switch (event.keyCode) {
-      case 38:
-        upArrow = true;
-        downArrow = false;
-        leftArrow = false;
-        rightArrow = false;
-        break;
-      case 40:
-        upArrow = false;
-        downArrow = true;
-        leftArrow = false;
-        rightArrow = false;
-        break;
-      case 37:
-        upArrow = false;
-        downArrow = false;
-        leftArrow = true;
-        rightArrow = false;
-        break;
-      case 39:
-        upArrow = false;
-        downArrow = false;
-        leftArrow = false;
-        rightArrow = true;
-        break;
-      case 32:
-        //shootSound.play();
-        shooting.push(new Shoot(shootingVirus, mainPlayerBoss.x + 16, mainPlayerBoss.y));
-    };
-});
-playBtnStart.forEach(e => {
-    e.addEventListener('click', () => {
-        //Audios
-        gameStartBtnAudio.play();
-        //Display page
-        splashScreen.style.display = 'none';
-        gameOverScreen.style.display = 'none';
-        winScreen.style.display = 'none';
-        selectPlayerScreen.style.display = 'block';
-        gameOver = false;
-    });
-});
-playBtnNext.forEach(e => {
-    e.addEventListener('click', () => {
-        if (gameOver === true){
-            //Audios
-            gameStartBtnAudio.play();
-            gameOverAudio.play();
-            // Display page
-            highScoreScreen.style.display = 'none';
-            splashScreen.style.display = 'none';
-            gameOverScreen.style.display = 'block';
-        } else {
-            //Audios
-            gameStartBtnAudio.play();
-            winAudio.play();
-            //Display page
-            highScoreScreen.style.display = 'none';
-            splashScreen.style.display = 'none';
-            winScreen.style.display = 'block';
-        };
-    });
-});
-virusBtn.addEventListener('click', () => {
-    pickedPathogen = 'virusPl';
-    playerSelectAudio.play();
-});
-bacteriaBtn.addEventListener('click', () => {
-    pickedPathogen = 'bacteriaPl';
-    playerSelectAudio.play();
-});
-nanovirusBtn.addEventListener('click', () => {
-    pickedPathogen = 'nanovirusPl';
-    playerSelectAudio.play();
-});
-protozoaBtn.addEventListener('click', () => {
-    pickedPathogen = 'protozoaPl';
-    playerSelectAudio.play();
-});
-playBtn.forEach(e => {
-    e.addEventListener('click', () => {
-        if (pickedPathogen === null) {
-            alert('Please pick a pathogen!');
-        } else {
-            // Values
-            if (pickedPathogen === 'virusPl'){
-                mainPlayer = new Player(virusImg, 480, 495);
-                gameoverImg.src = "../images/virus.png";
-            } else if (pickedPathogen === 'bacteriaPl'){
-                mainPlayer = new Player(bacteriaImg, 480, 495);
-                gameoverImg.src = "../images/bacteria.png";
-            } else if (pickedPathogen === 'nanovirusPl'){
-                mainPlayer = new Player(nanovirusImg, 480, 495);
-                gameoverImg.src = "../images/nanovirus.png";
-            } else if (pickedPathogen === 'protozoaPl'){
-                mainPlayer = new Player(protozoaImg, 480, 495);
-                gameoverImg.src = "../images/protozoa.png";
-            };
-            enemies = [
-                new Enemy(vaccineImg, 460, 290),
-                new Enemy(vaccineImg, 400, 290),
-                new Enemy(vaccineImg, 520, 290),
-                new Enemy(vaccineImg, 580, 290)
-            ];
-            gameOver = false;
-            //Display page
-            splashScreen.style.display = 'none';
-            gameOverScreen.style.display = 'none';
-            selectPlayerScreen.style.display = 'none';
-            winScreen.style.display = 'none';
-            highScoreScreen.style.display = 'none';
-            mycanvas.style.display = 'block';
-            //Sound
-            backgroundMusic.play();
-            backgroundMusic.volume = 0.2;
-            gameStartBtnAudio.play();
-            //Start game
-            intervalId = setInterval(() => {
-                requestAnimationFrame(updateGameArea);
-            }, 20);
-        };
-    });
-});
 //Functions
 function startSplashScreen(){
     splashScreen.style.display = 'block';
     backgroundMusic.play();
     backgroundMusic.volume = 0.2;
 }
+function gameScreen(){
+    ctx.clearRect(0, 0, mycanvas.width, mycanvas.height);
+    // Values
+    if (pickedPathogen === 'virusPl'){
+        mainPlayer = new Player(virusImg, 480, 495);
+        gameoverImg.src = "../images/virus.png";
+    } else if (pickedPathogen === 'bacteriaPl'){
+        mainPlayer = new Player(bacteriaImg, 480, 495);
+        gameoverImg.src = "../images/bacteria.png";
+    } else if (pickedPathogen === 'nanovirusPl'){
+        mainPlayer = new Player(nanovirusImg, 480, 495);
+        gameoverImg.src = "../images/nanovirus.png";
+    } else if (pickedPathogen === 'protozoaPl'){
+        mainPlayer = new Player(protozoaImg, 480, 495);
+        gameoverImg.src = "../images/protozoa.png";
+    };
+    enemies = [
+        new Enemy(vaccineImg, 460, 290),
+        new Enemy(vaccineImg, 400, 290),
+        new Enemy(vaccineImg, 520, 290),
+        new Enemy(vaccineImg, 580, 290)
+    ];
+    gameOver = false;
+    //Display page
+    splashScreen.style.display = 'none';
+    gameOverScreen.style.display = 'none';
+    selectPlayerScreen.style.display = 'none';
+    winScreen.style.display = 'none';
+    highScoreScreen.style.display = 'none';
+    mycanvas.style.display = 'block';
+    //Sound
+    backgroundMusic.play();
+    backgroundMusic.volume = 0.2;
+    gameStartBtnAudio.play();
+    //Start game
+    intervalId = setInterval(() => {
+        requestAnimationFrame(updateGameArea);
+    }, 20);
+};
 function updateGameArea() {
     ctx.clearRect(0, 0, mycanvas.width, mycanvas.height);
     //Adding audio
@@ -1011,31 +968,6 @@ function updateGameArea() {
                 };
             };
         };
-        //Winning
-        if (points >= 18600){
-            backgroundMusic.pause();
-            updateHighScores();
-            highScoreScreen.style.display = 'block';
-            mycanvas.style.display = 'none';
-            //Restart variables
-            specialCollects.forEach(specialCollect => {
-                specialCollect.collected = false;
-                specialCollect.notScored = true;
-            });
-            collects.forEach(collect => {
-                collect.collected = false;
-                collect.notScored = true;
-            });
-            lives = 2;
-            points = 0;
-            pointsRestart = 0;
-            upArrow = false;
-            downArrow = false;
-            leftArrow = false;
-            rightArrow = false;
-            gameOver = false;
-            clearInterval(intervalId);
-        };
         if (mainPlayer.checkcollision(enemies[0])){
             if (enemies[0].scared === true){
                 enemies[0].dead = true;
@@ -1097,7 +1029,7 @@ function updateGameArea() {
             };
         };
         //Boss level
-        if (points >= 100){
+        if (points >= 2000){
             //Restart some variables
             upArrow = false;
             downArrow = false;
@@ -1119,12 +1051,8 @@ function updateGameArea() {
                 mainPlayerBoss = new PlayerBoss(protozoaImg, 480, mycanvas.height - 100);
             };
             //Enemies
-            enemies = [
-                new Enemy(vaccineImg, 460, 290),
-                new Enemy(vaccineImg, 400, 290),
-                new Enemy(vaccineImg, 520, 290),
-                new Enemy(vaccineImg, 580, 290)
-            ];
+            bossEnemy = new Boss(enemyDoctor, 340, 10);
+            //Interval
             clearInterval(intervalId);
             intervalBoss = setInterval(() => {
                 requestAnimationFrame(bossLevelArea);
@@ -1132,6 +1060,7 @@ function updateGameArea() {
         };
     });
 };
+
 function bossLevelArea (){
     //Canvas definition
     ctx.fillStyle = "black";
@@ -1142,8 +1071,6 @@ function bossLevelArea (){
     });
     //Player
     mainPlayerBoss.draw();
-    mainPlayerBoss.speedX = 10;
-    mainPlayerBoss.speedY = 10;
     if(upArrow){
         mainPlayerBoss.moveUp();
         upArrow = false;
@@ -1165,7 +1092,55 @@ function bossLevelArea (){
         shoot.draw();
         shoot.y -= 2;
     });
-}
+    //Enemy
+    bossEnemy.draw();
+    bossEnemy.randomMovement(bossLevelWall);
+    bossLevelWall.forEach(wall => {
+        bossEnemy.checkcollision(wall);
+    });
+    bossEnemy.drawHealthBar();
+    //Collision enemy and shooting
+    bossEnemy.decreaseHealth();
+    shooting.forEach((shoot, i) => {
+        if (shoot.checkcollision(bossEnemy)){
+            bossEnemy.hit = true;
+            shooting.splice(i, 1);
+        };
+    });
+    //Winning boss
+    if (bossHealth <= 0){
+        cancelAnimationFrame(intervalBoss);
+        clearInterval(intervalBoss);
+        winning();
+    };
+};
+function winning(){
+    bossLevelAudio.pause();
+    updateHighScores();
+    highScoreScreen.style.display = 'block';
+    mycanvas.style.display = 'none';
+    //Restart variables
+    specialCollects.forEach(specialCollect => {
+        specialCollect.collected = false;
+        specialCollect.notScored = true;
+    });
+    collects.forEach(collect => {
+        collect.collected = false;
+        collect.notScored = true;
+    });
+    lives = 2;
+    points = 0;
+    pointsRestart = 0;
+    upArrow = false;
+    downArrow = false;
+    leftArrow = false;
+    rightArrow = false;
+    gameOver = false;
+    bossHealth = 360;
+    mainPlayerBoss = 0;
+    shooting = [];
+    bossEnemy = 0;
+};
 function restart(){
     // Values
     if (pickedPathogen === null) {
@@ -1227,4 +1202,93 @@ function updateHighScores() {
 //Run game
 window.addEventListener('load', () => {
     startSplashScreen();
+    playBtn.forEach(e => {
+        e.addEventListener('click', () => {
+            if (pickedPathogen === null) {
+                alert('Please pick a pathogen!');
+            } else {
+                gameScreen();
+            };
+        });
+    });
+    document.addEventListener("keydown", (event) => {
+        switch (event.keyCode) {
+          case 38:
+            upArrow = true;
+            downArrow = false;
+            leftArrow = false;
+            rightArrow = false;
+            break;
+          case 40:
+            upArrow = false;
+            downArrow = true;
+            leftArrow = false;
+            rightArrow = false;
+            break;
+          case 37:
+            upArrow = false;
+            downArrow = false;
+            leftArrow = true;
+            rightArrow = false;
+            break;
+          case 39:
+            upArrow = false;
+            downArrow = false;
+            leftArrow = false;
+            rightArrow = true;
+            break;
+          case 32:
+            //shootSound.play();
+            shooting.push(new Shoot(shootingVirus, mainPlayerBoss.x + 16, mainPlayerBoss.y));
+        };
+    });
+    playBtnStart.forEach(e => {
+        e.addEventListener('click', () => {
+            //Audios
+            gameStartBtnAudio.play();
+            //Display page
+            splashScreen.style.display = 'none';
+            gameOverScreen.style.display = 'none';
+            winScreen.style.display = 'none';
+            selectPlayerScreen.style.display = 'block';
+            gameOver = false;
+        });
+    });
+    playBtnNext.forEach(e => {
+        e.addEventListener('click', () => {
+            if (gameOver === true){
+                //Audios
+                gameStartBtnAudio.play();
+                gameOverAudio.play();
+                // Display page
+                highScoreScreen.style.display = 'none';
+                splashScreen.style.display = 'none';
+                gameOverScreen.style.display = 'block';
+            } else {
+                //Audios
+                gameStartBtnAudio.play();
+                winAudio.play();
+                //Display page
+                highScoreScreen.style.display = 'none';
+                splashScreen.style.display = 'none';
+                winScreen.style.display = 'block';
+            };
+        });
+    });
+    virusBtn.addEventListener('click', () => {
+        pickedPathogen = 'virusPl';
+        playerSelectAudio.play();
+    });
+    bacteriaBtn.addEventListener('click', () => {
+        pickedPathogen = 'bacteriaPl';
+        playerSelectAudio.play();
+    });
+    nanovirusBtn.addEventListener('click', () => {
+        pickedPathogen = 'nanovirusPl';
+        playerSelectAudio.play();
+    });
+    protozoaBtn.addEventListener('click', () => {
+        pickedPathogen = 'protozoaPl';
+        playerSelectAudio.play();
+    });
 });
