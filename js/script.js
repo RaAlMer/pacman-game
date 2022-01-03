@@ -387,7 +387,7 @@ class Boss extends Collectable {
         super(img, x, y);
         this.width = 300;
         this.height = 300;
-        this.speedX = 1;
+        this.speedX = 4;
         this.hit = false;
     };
     randomMovement(objects){
@@ -417,7 +417,7 @@ class Boss extends Collectable {
       };
       decreaseHealth(){
           if (this.hit === true){
-            bossHealth -= 30;
+            bossHealth -= 20;
             this.hit = false;
           };
       };
@@ -1053,6 +1053,9 @@ function updateGameArea() {
             //Enemies
             bossEnemy = new Boss(enemyDoctor, 340, 10);
             //Interval
+            if (intervalBoss) {
+                clearInterval(intervalBoss);
+            };
             clearInterval(intervalId);
             intervalBoss = setInterval(() => {
                 requestAnimationFrame(bossLevelArea);
@@ -1062,6 +1065,7 @@ function updateGameArea() {
 };
 
 function bossLevelArea (){
+    ctx.clearRect(0, 0, mycanvas.width - 390, mycanvas.height);
     //Canvas definition
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, mycanvas.width - 390, mycanvas.height);
@@ -1090,7 +1094,7 @@ function bossLevelArea (){
     //Shooting
     shooting.forEach((shoot) => {
         shoot.draw();
-        shoot.y -= 2;
+        shoot.y -= 4;
     });
     //Enemy
     bossEnemy.draw();
@@ -1109,12 +1113,12 @@ function bossLevelArea (){
     });
     //Winning boss
     if (bossHealth <= 0){
-        cancelAnimationFrame(intervalBoss);
-        clearInterval(intervalBoss);
         winning();
     };
 };
 function winning(){
+    cancelAnimationFrame(intervalBoss);
+    clearInterval(intervalBoss);
     bossLevelAudio.pause();
     updateHighScores();
     highScoreScreen.style.display = 'block';
@@ -1204,6 +1208,10 @@ window.addEventListener('load', () => {
     startSplashScreen();
     playBtn.forEach(e => {
         e.addEventListener('click', () => {
+            clearInterval(intervalId);
+            cancelAnimationFrame(intervalId);
+            clearInterval(intervalBoss);
+            cancelAnimationFrame(intervalBoss);
             if (pickedPathogen === null) {
                 alert('Please pick a pathogen!');
             } else {
