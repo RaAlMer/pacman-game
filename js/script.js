@@ -36,6 +36,8 @@ let intervalBoss = 0;
 let shooting = [];
 let bossEnemy = 0;
 let bossHealth = 360;
+let shootingBoss = [];
+let intervalBossShoot = 0;
 
 //Images
 //Classes
@@ -63,6 +65,8 @@ const shootingVirus = new Image();
 shootingVirus.src = '../images/shootingVirus.png';
 const enemyDoctor = new Image();
 enemyDoctor.src = '../images/plagueDoctor.png';
+const shootingVaccine = new Image();
+shootingVaccine.src = '../images/shootingVaccine.png';
 
 //Audios
 let backgroundMusic = new Audio('../audios/arcade_music.wav');
@@ -385,8 +389,8 @@ class Shoot extends Collectable{
 class Boss extends Collectable {
     constructor(img, x, y){
         super(img, x, y);
-        this.width = 300;
-        this.height = 300;
+        this.width = 240;
+        this.height = 240;
         this.speedX = 4;
         this.hit = false;
     };
@@ -418,6 +422,12 @@ class Boss extends Collectable {
       decreaseHealth(){
           if (this.hit === true){
             bossHealth -= 20;
+            points += 200;
+            if (this.speedX < 0){
+                this.speedX -= 0.2;
+            } else if (this.speedX > 0){
+                this.speedX += 0.2;
+            };            
             this.hit = false;
           };
       };
@@ -723,6 +733,13 @@ highScores = [
         score: 00000
     }
 ];
+//Shooting from enemy boss
+if (intervalBossShoot){
+    clearInterval(intervalBossShoot);
+};
+intervalBossShoot = setInterval(() => {
+    shootingBoss.push(new Shoot(shootingVaccine, bossEnemy.x + 120, bossEnemy.y + 220));
+}, 400);
 //Functions
 function startSplashScreen(){
     splashScreen.style.display = 'block';
@@ -1039,7 +1056,7 @@ function updateGameArea() {
             backgroundMusic.pause();
             playerMovingAudio.pause();
             bossLevelAudio.play();
-            bossLevelAudio.volume = 0.6;            
+            bossLevelAudio.volume = 0.6;       
             //Player
             if (pickedPathogen === 'virusPl'){
                 mainPlayerBoss = new PlayerBoss(virusImg, 480, mycanvas.height - 100);
@@ -1065,10 +1082,10 @@ function updateGameArea() {
 };
 
 function bossLevelArea (){
-    ctx.clearRect(0, 0, mycanvas.width - 390, mycanvas.height);
+    ctx.clearRect(0, 0, mycanvas.width, mycanvas.height);
     //Canvas definition
     ctx.fillStyle = "black";
-    ctx.fillRect(0, 0, mycanvas.width - 390, mycanvas.height);
+    ctx.fillRect(0, 0, mycanvas.width, mycanvas.height);
     //Wall
     bossLevelWall.forEach((wall) => {
         wall.draw();
@@ -1091,6 +1108,15 @@ function bossLevelArea (){
     bossLevelWall.forEach(wall => {
         mainPlayerBoss.checkcollision(wall);
     });
+    //Points
+    ctx.fillStyle = "white";
+    ctx.font = "24px 'Press Start 2P'"
+    ctx.fillText(`HIGH SCORE`, 1030, 40);
+    ctx.fillText(points, 1200, 80);
+    ctx.fillText("1UP", 1320, 40);
+    ctx.fillText("LIVES", 1150, 120);
+    ctx.fillText(lives, 1200, 160);
+    ctx.fillText("BOSS HEALTH", mycanvas.width - 380, mycanvas.height - 420);
     //Shooting
     shooting.forEach((shoot) => {
         shoot.draw();
@@ -1103,6 +1129,11 @@ function bossLevelArea (){
         bossEnemy.checkcollision(wall);
     });
     bossEnemy.drawHealthBar();
+    //Shooting enemy
+    shootingBoss.forEach((shoot) => {
+        shoot.draw();
+        shoot.y += 4;
+    });
     //Collision enemy and shooting
     bossEnemy.decreaseHealth();
     shooting.forEach((shoot, i) => {
@@ -1111,8 +1142,46 @@ function bossLevelArea (){
             shooting.splice(i, 1);
         };
     });
+    //Collision player and shooting
+    shootingBoss.forEach((shoot, i) => {
+        if (shoot.checkcollision(mainPlayerBoss)){
+            shootingBoss.splice(i, 1);
+            lives--;
+        }
+    });
+    //Losing
+    if (lives < 0){
+        gameOver = true;
+        bossLevelAudio.pause();
+        updateHighScores();
+        highScoreScreen.style.display = 'block';
+        mycanvas.style.display = 'none';
+        //Restart variables
+        specialCollects.forEach(specialCollect => {
+            specialCollect.collected = false;
+            specialCollect.notScored = true;
+        });
+        collects.forEach(collect => {
+            collect.collected = false;
+            collect.notScored = true;
+        });
+        lives = 2;
+        points = 0;
+        pointsRestart = 0;
+        upArrow = false;
+        downArrow = false;
+        leftArrow = false;
+        rightArrow = false;
+        bossHealth = 360;
+        mainPlayerBoss = 0;
+        shooting = [];
+        bossEnemy = 0;
+        shootingBoss = [];
+        clearInterval(intervalId);
+    };
     //Winning boss
     if (bossHealth <= 0){
+        points += 5000;
         winning();
     };
 };
@@ -1144,6 +1213,7 @@ function winning(){
     mainPlayerBoss = 0;
     shooting = [];
     bossEnemy = 0;
+    shootingBoss = [];
 };
 function restart(){
     // Values
