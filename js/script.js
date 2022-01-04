@@ -30,7 +30,7 @@ let outOfBox = 0;
 let highScores = [];
 let namePlayer = "";
 let gameOver = false;
-
+//Boss variables
 let mainPlayerBoss = 0;
 let intervalBoss = 0;
 let shooting = [];
