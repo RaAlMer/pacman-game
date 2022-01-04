@@ -696,6 +696,100 @@ if (intervalBossShoot){
 intervalBossShoot = setInterval(() => {
     shootingBoss.push(new Shoot(shootingVaccine, bossEnemy.x + 120, bossEnemy.y + 220));
 }, 400);
+//Event listeners
+playBtn.forEach(e => {
+    e.addEventListener('click', () => {
+        clearInterval(intervalId);
+        cancelAnimationFrame(intervalId);
+        clearInterval(intervalBoss);
+        cancelAnimationFrame(intervalBoss);
+        if (pickedPathogen === null) {
+            alert('Please pick a pathogen!');
+        } else {
+            gameScreen();
+        };
+    });
+});
+document.addEventListener("keydown", (event) => {
+    switch (event.keyCode) {
+      case 38:
+        upArrow = true;
+        downArrow = false;
+        leftArrow = false;
+        rightArrow = false;
+        break;
+      case 40:
+        upArrow = false;
+        downArrow = true;
+        leftArrow = false;
+        rightArrow = false;
+        break;
+      case 37:
+        upArrow = false;
+        downArrow = false;
+        leftArrow = true;
+        rightArrow = false;
+        break;
+      case 39:
+        upArrow = false;
+        downArrow = false;
+        leftArrow = false;
+        rightArrow = true;
+        break;
+      case 32:
+        coughShootAudio.play();
+        shooting.push(new Shoot(shootingVirus, mainPlayerBoss.x + 16, mainPlayerBoss.y));
+    };
+});
+playBtnStart.forEach(e => {
+    e.addEventListener('click', () => {
+        //Audios
+        gameStartBtnAudio.play();
+        //Display page
+        splashScreen.style.display = 'none';
+        gameOverScreen.style.display = 'none';
+        winScreen.style.display = 'none';
+        selectPlayerScreen.style.display = 'block';
+        gameOver = false;
+    });
+});
+playBtnNext.forEach(e => {
+    e.addEventListener('click', () => {
+        if (gameOver === true){
+            //Audios
+            gameStartBtnAudio.play();
+            gameOverAudio.play();
+            // Display page
+            highScoreScreen.style.display = 'none';
+            splashScreen.style.display = 'none';
+            gameOverScreen.style.display = 'block';
+        } else {
+            //Audios
+            gameStartBtnAudio.play();
+            winAudio.play();
+            //Display page
+            highScoreScreen.style.display = 'none';
+            splashScreen.style.display = 'none';
+            winScreen.style.display = 'block';
+        };
+    });
+});
+virusBtn.addEventListener('click', () => {
+    pickedPathogen = 'virusPl';
+    playerSelectAudio.play();
+});
+bacteriaBtn.addEventListener('click', () => {
+    pickedPathogen = 'bacteriaPl';
+    playerSelectAudio.play();
+});
+nanovirusBtn.addEventListener('click', () => {
+    pickedPathogen = 'nanovirusPl';
+    playerSelectAudio.play();
+});
+protozoaBtn.addEventListener('click', () => {
+    pickedPathogen = 'protozoaPl';
+    playerSelectAudio.play();
+});
 //Functions
 function startSplashScreen(){
     splashScreen.style.display = 'block';
@@ -1149,97 +1243,4 @@ function updateHighScores() {
 //Run game
 window.addEventListener('load', () => {
     startSplashScreen();
-    playBtn.forEach(e => {
-        e.addEventListener('click', () => {
-            /* clearInterval(intervalId);
-            cancelAnimationFrame(intervalId);
-            clearInterval(intervalBoss);
-            cancelAnimationFrame(intervalBoss); */
-            if (pickedPathogen === null) {
-                alert('Please pick a pathogen!');
-            } else {
-                gameScreen();
-            };
-        });
-    });
-    document.addEventListener("keydown", (event) => {
-        switch (event.keyCode) {
-          case 38:
-            upArrow = true;
-            downArrow = false;
-            leftArrow = false;
-            rightArrow = false;
-            break;
-          case 40:
-            upArrow = false;
-            downArrow = true;
-            leftArrow = false;
-            rightArrow = false;
-            break;
-          case 37:
-            upArrow = false;
-            downArrow = false;
-            leftArrow = true;
-            rightArrow = false;
-            break;
-          case 39:
-            upArrow = false;
-            downArrow = false;
-            leftArrow = false;
-            rightArrow = true;
-            break;
-          case 32:
-            coughShootAudio.play();
-            shooting.push(new Shoot(shootingVirus, mainPlayerBoss.x + 16, mainPlayerBoss.y));
-        };
-    });
-    playBtnStart.forEach(e => {
-        e.addEventListener('click', () => {
-            //Audios
-            gameStartBtnAudio.play();
-            //Display page
-            splashScreen.style.display = 'none';
-            gameOverScreen.style.display = 'none';
-            winScreen.style.display = 'none';
-            selectPlayerScreen.style.display = 'block';
-            gameOver = false;
-        });
-    });
-    playBtnNext.forEach(e => {
-        e.addEventListener('click', () => {
-            if (gameOver === true){
-                //Audios
-                gameStartBtnAudio.play();
-                gameOverAudio.play();
-                // Display page
-                highScoreScreen.style.display = 'none';
-                splashScreen.style.display = 'none';
-                gameOverScreen.style.display = 'block';
-            } else {
-                //Audios
-                gameStartBtnAudio.play();
-                winAudio.play();
-                //Display page
-                highScoreScreen.style.display = 'none';
-                splashScreen.style.display = 'none';
-                winScreen.style.display = 'block';
-            };
-        });
-    });
-    virusBtn.addEventListener('click', () => {
-        pickedPathogen = 'virusPl';
-        playerSelectAudio.play();
-    });
-    bacteriaBtn.addEventListener('click', () => {
-        pickedPathogen = 'bacteriaPl';
-        playerSelectAudio.play();
-    });
-    nanovirusBtn.addEventListener('click', () => {
-        pickedPathogen = 'nanovirusPl';
-        playerSelectAudio.play();
-    });
-    protozoaBtn.addEventListener('click', () => {
-        pickedPathogen = 'protozoaPl';
-        playerSelectAudio.play();
-    });
 });
