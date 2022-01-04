@@ -1151,10 +1151,10 @@ window.addEventListener('load', () => {
     startSplashScreen();
     playBtn.forEach(e => {
         e.addEventListener('click', () => {
-            clearInterval(intervalId);
+            /* clearInterval(intervalId);
             cancelAnimationFrame(intervalId);
             clearInterval(intervalBoss);
-            cancelAnimationFrame(intervalBoss);
+            cancelAnimationFrame(intervalBoss); */
             if (pickedPathogen === null) {
                 alert('Please pick a pathogen!');
             } else {
