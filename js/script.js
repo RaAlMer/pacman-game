@@ -78,6 +78,9 @@ let playerMovingAudio = new Audio('../audios/player_moving.mp3');
 let playerSelectAudio = new Audio('../audios/player_select.mp3');
 let ghostScaredAudio = new Audio('../audios/ghostScaredFalse.wav');
 let bossLevelAudio = new Audio('../audios/bossLevelBg.wav');
+let coughShootAudio = new Audio('../audios/coughSound.mp3');
+let enemyShootAudio = new Audio('../audios/shootEnemySound.wav');
+let bossPainAudio = new Audio('../audios/bossPainAudio.wav');
 
 //Canvas
 const mycanvas = document.getElementById('my-canvas');
@@ -423,6 +426,7 @@ class Boss extends Collectable {
           if (this.hit === true){
             bossHealth -= 20;
             points += 200;
+            bossPainAudio.play();
             if (this.speedX < 0){
                 this.speedX -= 0.2;
             } else if (this.speedX > 0){
@@ -1017,28 +1021,7 @@ function updateGameArea() {
                 enemy.scared = false;
                 backgroundMusic.pause();
                 if (lives < 0){
-                    gameOver = true;
-                    backgroundMusic.pause();
-                    updateHighScores();
-                    highScoreScreen.style.display = 'block';
-                    mycanvas.style.display = 'none';
-                    //Restart variables
-                    specialCollects.forEach(specialCollect => {
-                        specialCollect.collected = false;
-                        specialCollect.notScored = true;
-                    });
-                    collects.forEach(collect => {
-                        collect.collected = false;
-                        collect.notScored = true;
-                    });
-                    lives = 2;
-                    points = 0;
-                    pointsRestart = 0;
-                    upArrow = false;
-                    downArrow = false;
-                    leftArrow = false;
-                    rightArrow = false;
-                    clearInterval(intervalId);
+                    losing();
                 } else {
                     clearInterval(intervalId);
                     restart();
@@ -1133,6 +1116,7 @@ function bossLevelArea (){
     shootingBoss.forEach((shoot) => {
         shoot.draw();
         shoot.y += 4;
+        enemyShootAudio.play();
     });
     //Collision enemy and shooting
     bossEnemy.decreaseHealth();
@@ -1147,37 +1131,12 @@ function bossLevelArea (){
         if (shoot.checkcollision(mainPlayerBoss)){
             shootingBoss.splice(i, 1);
             lives--;
+            losingLifeAudio.play();
         }
     });
     //Losing
     if (lives < 0){
-        gameOver = true;
-        bossLevelAudio.pause();
-        updateHighScores();
-        highScoreScreen.style.display = 'block';
-        mycanvas.style.display = 'none';
-        //Restart variables
-        specialCollects.forEach(specialCollect => {
-            specialCollect.collected = false;
-            specialCollect.notScored = true;
-        });
-        collects.forEach(collect => {
-            collect.collected = false;
-            collect.notScored = true;
-        });
-        lives = 2;
-        points = 0;
-        pointsRestart = 0;
-        upArrow = false;
-        downArrow = false;
-        leftArrow = false;
-        rightArrow = false;
-        bossHealth = 360;
-        mainPlayerBoss = 0;
-        shooting = [];
-        bossEnemy = 0;
-        shootingBoss = [];
-        clearInterval(intervalId);
+        losing();
     };
     //Winning boss
     if (bossHealth <= 0){
@@ -1214,6 +1173,35 @@ function winning(){
     shooting = [];
     bossEnemy = 0;
     shootingBoss = [];
+};
+function losing(){
+    gameOver = true;
+    bossLevelAudio.pause();
+    updateHighScores();
+    highScoreScreen.style.display = 'block';
+    mycanvas.style.display = 'none';
+    //Restart variables
+    specialCollects.forEach(specialCollect => {
+        specialCollect.collected = false;
+        specialCollect.notScored = true;
+    });
+    collects.forEach(collect => {
+        collect.collected = false;
+        collect.notScored = true;
+    });
+    lives = 2;
+    points = 0;
+    pointsRestart = 0;
+    upArrow = false;
+    downArrow = false;
+    leftArrow = false;
+    rightArrow = false;
+    bossHealth = 360;
+    mainPlayerBoss = 0;
+    shooting = [];
+    bossEnemy = 0;
+    shootingBoss = [];
+    clearInterval(intervalId);
 };
 function restart(){
     // Values
@@ -1316,7 +1304,7 @@ window.addEventListener('load', () => {
             rightArrow = true;
             break;
           case 32:
-            //shootSound.play();
+            coughShootAudio.play();
             shooting.push(new Shoot(shootingVirus, mainPlayerBoss.x + 16, mainPlayerBoss.y));
         };
     });
