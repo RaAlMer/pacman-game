@@ -13,7 +13,6 @@ let gameoverImg = document.getElementById('virus-gameover');
 let winScreen = document.getElementById('win-page');
 let highScoreList = document.getElementById('highScoreTable');
 let highScoreScreen = document.getElementById('high-score-page');
-
 //Variables
 let pickedPathogen = null;
 let mainPlayer = 0;
@@ -38,7 +37,6 @@ let bossEnemy = 0;
 let bossHealth = 360;
 let shootingBoss = [];
 let intervalBossShoot = 0;
-
 //Images
 //Classes
 const virusImg = new Image();
@@ -67,7 +65,6 @@ const enemyDoctor = new Image();
 enemyDoctor.src = '../images/plagueDoctor.png';
 const shootingVaccine = new Image();
 shootingVaccine.src = '../images/shootingVaccine.png';
-
 //Audios
 let backgroundMusic = new Audio('../audios/arcade_music.wav');
 let losingLifeAudio = new Audio('../audios/lifeLostPlayer.wav');
@@ -81,11 +78,9 @@ let bossLevelAudio = new Audio('../audios/bossLevelBg.wav');
 let coughShootAudio = new Audio('../audios/coughSound.mp3');
 let enemyShootAudio = new Audio('../audios/shootEnemySound.wav');
 let bossPainAudio = new Audio('../audios/bossPainAudio.wav');
-
 //Canvas
 const mycanvas = document.getElementById('my-canvas');
 let ctx = mycanvas.getContext('2d');
-
 //Classes
 class Wall {
     constructor(x, y, width, height, color, gate){
@@ -102,7 +97,6 @@ class Wall {
         ctx.strokeRect(this.x, this.y, this.width, this.height);
     };
 };
-
 class Collectable {
     constructor(img, x, y, width, height) {
         this.img = img;
@@ -135,18 +129,15 @@ class Collectable {
         };
     };
     updateScore(object, score){
-        if (this.checkcollision(object)){
-            if (this.notScored === true){
-                points += score;
-                pointsRestart += score;
-                this.notScored = false;
-                playerMovingAudio.play();
-                playerMovingAudio.volume = 0.6;
-            }
-        }
+        if ((this.checkcollision(object)) && (this.notScored === true)){
+            points += score;
+            pointsRestart += score;
+            this.notScored = false;
+            playerMovingAudio.play();
+            playerMovingAudio.volume = 0.6;
+        };
     };
 };
-
 class Player extends Collectable {
     constructor(img, x, y){
         super(img, x, y);
@@ -178,21 +169,16 @@ class Player extends Collectable {
     moveUp(objects) {
         this.y -= this.speedY;
         objects.forEach(object => {
-            if (this.checkcollision(object)) {
-                this.y += this.speedY;
-            };
+            if (this.checkcollision(object)) this.y += this.speedY;
         });
     };
     moveDown(objects) {
         this.y += this.speedY;
         objects.forEach(object => {
-            if (this.checkcollision(object)) {
-                this.y -= this.speedY;
-            };
+            if (this.checkcollision(object)) this.y -= this.speedY;
         });
     };
 };
-
 class Enemy extends Player {
     constructor(img, x, y){
         super(img, x, y);
@@ -215,21 +201,15 @@ class Enemy extends Player {
         this.angle = Math.atan2(this.dy,this.dx);
         this.x += Math.cos(this.angle) * this.speedX;
         objects.forEach(object => {
-            if (this.dead === false || object.color === "blue"){
-                if (this.checkcollision(object)) {
-                    if (this.dy > 0){
-                        this.y += this.speedY;
-                        this.x -= Math.cos(this.angle) * this.speedX;
-                        if (this.checkcollision(object)){
-                            this.y -= this.speedY;
-                        };
-                    } else if (this.dy < 0){
-                        this.y -= this.speedY;
-                        this.x -= Math.cos(this.angle) * this.speedX;
-                        if (this.checkcollision(object)){
-                            this.y += this.speedY;
-                        };
-                    };
+            if ((this.dead === false || object.color === "blue") && this.checkcollision(object)){
+                if (this.dy > 0){
+                    this.y += this.speedY;
+                    this.x -= Math.cos(this.angle) * this.speedX;
+                    if (this.checkcollision(object)) this.y -= this.speedY;
+                } else if (this.dy < 0){
+                    this.y -= this.speedY;
+                    this.x -= Math.cos(this.angle) * this.speedX;
+                    if (this.checkcollision(object)) this.y += this.speedY;
                 };
             };
         });
@@ -241,21 +221,15 @@ class Enemy extends Player {
         this.angle = Math.atan2(this.dy,this.dx);
         this.y += Math.sin(this.angle) * this.speedY;
         objects.forEach(object => {
-            if (this.dead === false || object.color === "blue"){
-                if (this.checkcollision(object)) {
-                    if (this.dx > 0){
-                        this.x += this.speedX;
-                        this.y -= Math.sin(this.angle) * this.speedY;
-                        if (this.checkcollision(object)){
-                            this.x -= this.speedX;
-                        };
-                    } else if (this.dx < 0){
-                        this.x -= this.speedX;
-                        this.y -= Math.sin(this.angle) * this.speedY;
-                        if (this.checkcollision(object)){
-                            this.x += this.speedX;
-                        };
-                    };
+            if ((this.dead === false || object.color === "blue") && this.checkcollision(object)){
+                if (this.dx > 0){
+                    this.x += this.speedX;
+                    this.y -= Math.sin(this.angle) * this.speedY;
+                    if (this.checkcollision(object)) this.x -= this.speedX;
+                } else if (this.dx < 0){
+                    this.x -= this.speedX;
+                    this.y -= Math.sin(this.angle) * this.speedY;
+                    if (this.checkcollision(object)) this.x += this.speedX;
                 };
             };
         });
@@ -267,21 +241,15 @@ class Enemy extends Player {
         this.angle = Math.atan2(this.dy,this.dx);
         this.x += Math.cos(this.angle) * this.speedX;
         objects.forEach(object => {
-            if (this.dead === false || object.gate === false){
-                if (this.checkcollision(object)) {
-                    if (this.dy > 0){
-                        this.y += this.speedY;
-                        this.x -= Math.cos(this.angle) * this.speedX;
-                        if (this.checkcollision(object)){
-                            this.y -= this.speedY;
-                        };
-                    } else if (this.dy < 0){
-                        this.y -= this.speedY;
-                        this.x -= Math.cos(this.angle) * this.speedX;
-                        if (this.checkcollision(object)){
-                            this.y += this.speedY;
-                        };
-                    };
+            if ((this.dead === false || object.gate === false) && this.checkcollision(object)){
+                if (this.dy > 0){
+                    this.y += this.speedY;
+                    this.x -= Math.cos(this.angle) * this.speedX;
+                    if (this.checkcollision(object)) this.y -= this.speedY;
+                } else if (this.dy < 0){
+                    this.y -= this.speedY;
+                    this.x -= Math.cos(this.angle) * this.speedX;
+                    if (this.checkcollision(object)) this.y += this.speedY;
                 };
             };
         });
@@ -293,21 +261,15 @@ class Enemy extends Player {
         this.angle = Math.atan2(this.dy,this.dx);
         this.y += Math.sin(this.angle) * this.speedY;
         objects.forEach(object => {
-            if (this.dead === false || object.gate === false){
-                if (this.checkcollision(object)) {
-                    if (this.dx > 0){
-                        this.x += this.speedX;
-                        this.y -= Math.sin(this.angle) * this.speedY;
-                        if (this.checkcollision(object)){
-                            this.x -= this.speedX;
-                        };
-                    } else if (this.dx < 0){
-                        this.x -= this.speedX;
-                        this.y -= Math.sin(this.angle) * this.speedY;
-                        if (this.checkcollision(object)){
-                            this.x += this.speedX;
-                        };
-                    };
+            if ((this.dead === false || object.gate === false) && this.checkcollision(object)){
+                if (this.dx > 0){
+                    this.x += this.speedX;
+                    this.y -= Math.sin(this.angle) * this.speedY;
+                    if (this.checkcollision(object)) this.x -= this.speedX;
+                } else if (this.dx < 0){
+                    this.x -= this.speedX;
+                    this.y -= Math.sin(this.angle) * this.speedY;
+                    if (this.checkcollision(object)) this.x += this.speedX;
                 };
             };
         });
@@ -345,7 +307,6 @@ class Enemy extends Player {
         };
     };
 };
-
 //Boss level classes
 class PlayerBoss extends Collectable {
     constructor(img, x, y){
@@ -358,28 +319,20 @@ class PlayerBoss extends Collectable {
     moveRight(objects) {
         this.x += this.speedX;
         objects.forEach(object => {
-            if (this.checkcollision(object)) {
-                this.x -= this.speedX;
-            };
+            if (this.checkcollision(object)) this.x -= this.speedX;
         });
       };
     moveLeft() {
         this.x -= this.speedX;
-        if (this.x <= 0){
-            this.x += this.speedX;
-        };
+        if (this.x <= 0) this.x += this.speedX;
     };
     moveUp() {
         this.y -= this.speedY;
-        if (this.y <= 400){
-            this.y += this.speedY;
-        };
+        if (this.y <= 400) this.y += this.speedY;
     };
     moveDown() {
         this.y += this.speedY;
-        if (this.y >= 670){
-            this.y -= this.speedY;
-        };
+        if (this.y >= 670) this.y -= this.speedY;
     };
 };
 class Shoot extends Collectable{
@@ -436,7 +389,6 @@ class Boss extends Collectable {
           };
       };
 };
-
 //Walls
 const outerWallThickness = 10;
 const walls = [
@@ -801,9 +753,7 @@ function updateGameArea() {
         wall.draw();
     });
     specialCollects.forEach(specialCollect => {
-        if (specialCollect.collected === false){
-            specialCollect.draw();
-        }
+        if (specialCollect.collected === false) specialCollect.draw();
         specialCollect.checkcollision(mainPlayer);
         specialCollect.collect(mainPlayer);
         specialCollect.updateScore(mainPlayer, 2000);
@@ -822,9 +772,7 @@ function updateGameArea() {
         };
     });
     collects.forEach(collect => {
-        if (collect.collected === false){
-            collect.draw();
-        };
+        if (collect.collected === false) collect.draw();
         collect.checkcollision(mainPlayer);
         collect.collect(mainPlayer);
         collect.updateScore(mainPlayer, 50);
@@ -865,29 +813,17 @@ function updateGameArea() {
             };
             if (enemies[0].scared === true && enemies[0].dead === false){
                 enemies[0].scare(mainPlayer, walls);
-                if (enemies[0].x >= 976){
-                    enemies[0].x = 0;
-                };
-                if (enemies[0].x <= 0){
-                    enemies[0].x = 975;
-                };
+                if (enemies[0].x >= 976) enemies[0].x = 0;
+                if (enemies[0].x <= 0) enemies[0].x = 975;
             } else if (enemies[0].scared === false && enemies[0].dead === false){
                 enemies[0].updateAngleX(mainPlayer, walls);
                 enemies[0].updateAngleY(mainPlayer, walls);
-                if (enemies[0].x >= 976){
-                    enemies[0].x = 0;
-                };
-                if (enemies[0].x <= 0){
-                    enemies[0].x = 975;
-                };
+                if (enemies[0].x >= 976) enemies[0].x = 0;
+                if (enemies[0].x <= 0) enemies[0].x = 975;
             } else if (enemies[0].dead === true){
                 enemies[0].death(walls);
-                if (enemies[0].x >= 976){
-                    enemies[0].x = 0;
-                };
-                if (enemies[0].x <= 0){
-                    enemies[0].x = 975;
-                };
+                if (enemies[0].x >= 976) enemies[0].x = 0;
+                if (enemies[0].x <= 0) enemies[0].x = 975;
             };
         };
         if (pointsRestart >= 5000 || enemies[1].home === false){
@@ -898,29 +834,17 @@ function updateGameArea() {
             };
             if (enemies[1].scared === true && enemies[1].dead === false){
                 enemies[1].scare(mainPlayer, walls);
-                if (enemies[1].x >= 976){
-                    enemies[1].x = 0;
-                };
-                if (enemies[1].x <= 0){
-                    enemies[1].x = 975;
-                };
+                if (enemies[1].x >= 976) enemies[1].x = 0;
+                if (enemies[1].x <= 0) enemies[1].x = 975;
             } else if (enemies[1].scared === false && enemies[1].dead === false) {
                 enemies[1].updateAngleX(mainPlayer, walls);
                 enemies[1].updateAngleY(mainPlayer, walls);
-                if (enemies[1].x >= 976){
-                    enemies[1].x = 0;
-                };
-                if (enemies[1].x <= 0){
-                    enemies[1].x = 975;
-                };
+                if (enemies[1].x >= 976) enemies[1].x = 0;
+                if (enemies[1].x <= 0) enemies[1].x = 975;
             } else if (enemies[1].dead === true){
                 enemies[1].death(walls);
-                if (enemies[1].x >= 976){
-                    enemies[1].x = 0;
-                };
-                if (enemies[1].x <= 0){
-                    enemies[1].x = 975;
-                };
+                if (enemies[1].x >= 976) enemies[1].x = 0;
+                if (enemies[1].x <= 0) enemies[1].x = 975;
             };
         };
         if (pointsRestart >= 7500 || enemies[2].home === false){
@@ -931,29 +855,17 @@ function updateGameArea() {
             };
             if (enemies[2].scared === true && enemies[2].dead === false){
                 enemies[2].scare(mainPlayer, walls);
-                if (enemies[2].x >= 976){
-                    enemies[2].x = 0;
-                };
-                if (enemies[2].x <= 0){
-                    enemies[2].x = 975;
-                };
+                if (enemies[2].x >= 976) enemies[2].x = 0;
+                if (enemies[2].x <= 0) enemies[2].x = 975;
             } else if (enemies[2].scared === false && enemies[2].dead === false) {
                 enemies[2].updateAngleX(mainPlayer, walls);
                 enemies[2].updateAngleY(mainPlayer, walls);
-                if (enemies[2].x >= 976){
-                    enemies[2].x = 0;
-                };
-                if (enemies[2].x <= 0){
-                    enemies[2].x = 975;
-                };
+                if (enemies[2].x >= 976) enemies[2].x = 0;
+                if (enemies[2].x <= 0) enemies[2].x = 975;
             }else if (enemies[2].dead === true){
                 enemies[2].death(walls);
-                if (enemies[2].x >= 976){
-                    enemies[2].x = 0;
-                };
-                if (enemies[2].x <= 0){
-                    enemies[2].x = 975;
-                };
+                if (enemies[2].x >= 976) enemies[2].x = 0;
+                if (enemies[2].x <= 0) enemies[2].x = 975;
             };
         };
         if (pointsRestart >= 10000 || enemies[3].home === false){
@@ -964,50 +876,30 @@ function updateGameArea() {
             };
             if (enemies[3].scared === true && enemies[3].dead === false){
                 enemies[3].scare(mainPlayer, walls);
-                if (enemies[3].x >= 976){
-                    enemies[3].x = 0;
-                };
-                if (enemies[3].x <= 0){
-                    enemies[3].x = 975;
-                };
+                if (enemies[3].x >= 976) enemies[3].x = 0;
+                if (enemies[3].x <= 0) enemies[3].x = 975;
             } else if (enemies[3].scared === false && enemies[3].dead === false) {
                 enemies[3].updateAngleX(mainPlayer, walls);
                 enemies[3].updateAngleY(mainPlayer, walls);
-                if (enemies[3].x >= 976){
-                    enemies[3].x = 0;
-                };
-                if (enemies[3].x <= 0){
-                    enemies[3].x = 975;
-                };
+                if (enemies[3].x >= 976) enemies[3].x = 0;
+                if (enemies[3].x <= 0) enemies[3].x = 975;
             } else if (enemies[3].dead === true){
                 enemies[3].death(walls);
-                if (enemies[3].x >= 976){
-                    enemies[3].x = 0;
-                };
-                if (enemies[3].x <= 0){
-                    enemies[3].x = 975;
-                };
+                if (enemies[3].x >= 976) enemies[3].x = 0;
+                if (enemies[3].x <= 0) enemies[3].x = 975;
             };
         };
         if (mainPlayer.checkcollision(enemies[0])){
-            if (enemies[0].scared === true){
-                enemies[0].dead = true;
-            };
+            if (enemies[0].scared === true) enemies[0].dead = true;
         };
         if (mainPlayer.checkcollision(enemies[1])){
-            if (enemies[1].scared === true){
-                enemies[1].dead = true;
-            };
+            if (enemies[1].scared === true) enemies[1].dead = true;
         };
         if (mainPlayer.checkcollision(enemies[2])){
-            if (enemies[2].scared === true){
-                enemies[2].dead = true;
-            };
+            if (enemies[2].scared === true) enemies[2].dead = true;
         };
         if (mainPlayer.checkcollision(enemies[3])){
-            if (enemies[3].scared === true){
-                enemies[3].dead = true;
-            };
+            if (enemies[3].scared === true) enemies[3].dead = true;
         };
         if (mainPlayer.checkcollision(enemy)){
             if (enemy.scared === false) {
@@ -1029,7 +921,7 @@ function updateGameArea() {
             };
         };
         //Boss level
-        if (points >= 2000){
+        if (points >= 18600){
             //Restart some variables
             upArrow = false;
             downArrow = false;
@@ -1053,9 +945,7 @@ function updateGameArea() {
             //Enemies
             bossEnemy = new Boss(enemyDoctor, 340, 10);
             //Interval
-            if (intervalBoss) {
-                clearInterval(intervalBoss);
-            };
+            if (intervalBoss) clearInterval(intervalBoss);
             clearInterval(intervalId);
             intervalBoss = setInterval(() => {
                 requestAnimationFrame(bossLevelArea);
@@ -1063,7 +953,6 @@ function updateGameArea() {
         };
     });
 };
-
 function bossLevelArea (){
     ctx.clearRect(0, 0, mycanvas.width, mycanvas.height);
     //Canvas definition
@@ -1135,9 +1024,7 @@ function bossLevelArea (){
         }
     });
     //Losing
-    if (lives < 0){
-        losing();
-    };
+    if (lives < 0) losing();
     //Winning boss
     if (bossHealth <= 0){
         points += 5000;
@@ -1236,7 +1123,6 @@ function restart(){
         }, 20);
     };
 };
-
 function saveHighScore(index) {
     namePlayer = prompt("WHAT'S YOUR NAME PLAYER?");
     highScores.splice(index, 0 , {
@@ -1245,7 +1131,6 @@ function saveHighScore(index) {
     });
     highScores.pop();
 };
-
 function updateHighScores() {
     if (points >= highScores[0].score) {
         saveHighScore(0);
