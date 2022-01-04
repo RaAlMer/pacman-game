@@ -109,9 +109,7 @@ class Collectable {
         this.mutate = false;
     };
     draw(){
-        this.img.onload = function(){
-            ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
-        };
+        ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
     };
     checkcollision(object) {
         return (
