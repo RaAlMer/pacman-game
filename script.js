@@ -40,44 +40,44 @@ let intervalBossShoot = 0;
 //Images
 //Classes
 const virusImg = new Image();
-virusImg.src = "../images/virus.png";
+virusImg.src = './images/virus.png';
 const bacteriaImg = new Image();
-bacteriaImg.src = "../images/bacteria.png";
+bacteriaImg.src = "./images/bacteria.png";
 const protozoaImg = new Image();
-protozoaImg.src = "../images/protozoa.png";
+protozoaImg.src = "./images/protozoa.png";
 const nanovirusImg = new Image();
-nanovirusImg.src = "../images/nanovirus.png";
+nanovirusImg.src = "./images/nanovirus.png";
 //Collectables
 const humanImg = new Image();
-humanImg.src = "../images/human.png";
+humanImg.src = "./images/human.png";
 const mutationImg = new Image();
-mutationImg.src = "../images/mutation.png";
+mutationImg.src = "./images/mutation.png";
 //Enemy
 const vaccineImg = new Image();
-vaccineImg.src = "../images/vaccine.png";
+vaccineImg.src = "./images/vaccine.png";
 const vaccineImgDeath = new Image();
-vaccineImgDeath.src = "../images/vaccineDead.png";
+vaccineImgDeath.src = "./images/vaccineDead.png";
 //BossLevel
 //Shooting
 const shootingVirus = new Image();
-shootingVirus.src = '../images/shootingVirus.png';
+shootingVirus.src = './images/shootingVirus.png';
 const enemyDoctor = new Image();
-enemyDoctor.src = '../images/plagueDoctor.png';
+enemyDoctor.src = './images/plagueDoctor.png';
 const shootingVaccine = new Image();
-shootingVaccine.src = '../images/shootingVaccine.png';
+shootingVaccine.src = './images/shootingVaccine.png';
 //Audios
-let backgroundMusic = new Audio('../audio/arcade_music.wav');
-let losingLifeAudio = new Audio('../audio/lifeLostPlayer.wav');
-let gameStartBtnAudio = new Audio('../audio/game_start.wav');
-let gameOverAudio = new Audio('../audio/game_over.wav');
-let winAudio = new Audio('../audio/win_sound.mp3');
-let playerMovingAudio = new Audio('../audio/player_moving.mp3');
-let playerSelectAudio = new Audio('../audio/player_select.mp3');
-let ghostScaredAudio = new Audio('../audio/ghostScaredFalse.wav');
-let bossLevelAudio = new Audio('../audio/bossLevelBg.wav');
-let coughShootAudio = new Audio('../audio/coughSound.mp3');
-let enemyShootAudio = new Audio('../audio/shootEnemySound.wav');
-let bossPainAudio = new Audio('../audio/bossPainAudio.wav');
+let backgroundMusic = new Audio('./audio/arcade_music.wav');
+let losingLifeAudio = new Audio('./audio/lifeLostPlayer.wav');
+let gameStartBtnAudio = new Audio('./audio/game_start.wav');
+let gameOverAudio = new Audio('./audio/game_over.wav');
+let winAudio = new Audio('./audio/win_sound.mp3');
+let playerMovingAudio = new Audio('./audio/player_moving.mp3');
+let playerSelectAudio = new Audio('./audio/player_select.mp3');
+let ghostScaredAudio = new Audio('./audio/ghostScaredFalse.wav');
+let bossLevelAudio = new Audio('./audio/bossLevelBg.wav');
+let coughShootAudio = new Audio('./audio/coughSound.mp3');
+let enemyShootAudio = new Audio('./audio/shootEnemySound.wav');
+let bossPainAudio = new Audio('./audio/bossPainAudio.wav');
 //Canvas
 const mycanvas = document.getElementById('my-canvas');
 let ctx = mycanvas.getContext('2d');
@@ -109,10 +109,10 @@ class Collectable {
         this.mutate = false;
     };
     draw(){
-        this.img.onload = () => {
+        //this.img.onload = () => {
             ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
-            console.log('Image done');
-        };
+            //console.log('Image done');
+        //};
     };
     checkcollision(object) {
         return (
