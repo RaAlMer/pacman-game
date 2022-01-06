@@ -793,8 +793,10 @@ protozoaBtn.addEventListener('click', () => {
 //Functions
 function startSplashScreen(){
     splashScreen.style.display = 'block';
-    backgroundMusic.play();
-    backgroundMusic.volume = 0.2;
+    window.onload = () => {
+        backgroundMusic.play();
+        backgroundMusic.volume = 0.2;
+    };    
 };
 function gameScreen(){
     ctx.clearRect(0, 0, mycanvas.width, mycanvas.height);
