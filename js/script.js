@@ -109,7 +109,10 @@ class Collectable {
         this.mutate = false;
     };
     draw(){
-        ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+        this.img.onload = () => {
+            ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
+            console.log('Image done');
+        };
     };
     checkcollision(object) {
         return (
@@ -795,7 +798,7 @@ function startSplashScreen(){
     splashScreen.style.display = 'block';
     window.onload = () => {
         backgroundMusic.play();
-        backgroundMusic.volume = 0.2;
+        backgroundMusic.volume = 0.4;
     };    
 };
 function gameScreen(){
