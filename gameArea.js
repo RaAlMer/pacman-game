@@ -178,7 +178,7 @@ function updateGameArea() {
             };
         };
         //Boss level
-        if (points >= 18600){
+        if (points >= 5500){ //18600 is the correct amount of points, I'm using 5500 just for the presentation
             //Restart some variables
             upArrow = false;
             downArrow = false;
