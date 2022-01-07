@@ -204,11 +204,11 @@ Definition of the different states and their transition (transition functions)
 
 ### Trello
 
-[Link url](https://trello.com/b/WlTZA7Xk/vacman-game)
+[Link Trello](https://trello.com/b/WlTZA7Xk/vacman-game)
 
 ### Git
 
-URls for the project repo and deploy
+URLs for the project repo and deploy
 [Link Repo](https://github.com/RaAlMer/vacman-game)
 [Link Deploy](https://raalmer.github.io/vacman-game/)
 
