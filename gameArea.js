@@ -177,8 +177,18 @@ function updateGameArea() {
                 };
             };
         };
+        /* for (let i = 0; i < enemies.length; i++){
+            enemy.checkcollision(enemies[i]);
+        }; */
+        /* for (let i = 0; i < enemies.length; i++) {
+            let enemy1 = enemies[i];
+            for (let j = i + 1; j < enemies.length; j++) {
+                let enemy2 = enemies[j];
+                enemy2.checkcollision(enemy1);
+            }
+        } */
         //Boss level
-        if (points >= 5500){ //18600 is the correct amount of points, I'm using 5500 just for the presentation
+        if (points >= 18600){
             //Restart some variables
             upArrow = false;
             downArrow = false;
