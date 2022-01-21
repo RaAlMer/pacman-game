@@ -1,18 +1,18 @@
 //Selectors
-let splashScreen = document.getElementById('start-page');
-let playBtnStart = document.querySelectorAll('.play-btn-start');
-let playBtn = document.querySelectorAll('.play-btn');
-let playBtnNext = document.querySelectorAll('.play-btn-next');
-let gameOverScreen = document.getElementById('game-over-page');
-let selectPlayerScreen = document.getElementById('select-player-page');
-let virusBtn = document.getElementById('virusPlayer');
-let bacteriaBtn = document.getElementById('bacteriaPlayer');
-let nanovirusBtn = document.getElementById('nanovirusPlayer');
-let protozoaBtn = document.getElementById('protozoaPlayer');
-let gameoverImg = document.getElementById('virus-gameover');
-let winScreen = document.getElementById('win-page');
-let highScoreList = document.getElementById('highScoreTable');
-let highScoreScreen = document.getElementById('high-score-page');
+let splashScreen = document.getElementById('start-page'); //Screen where the game starts
+let playBtnStart = document.querySelectorAll('.play-btn-start'); //Button to start the game in the first screen
+let playBtn = document.querySelectorAll('.play-btn'); //Button to restart the game in the rest of screens
+let playBtnNext = document.querySelectorAll('.play-btn-next'); //Button to go from the scores to the end screen
+let gameOverScreen = document.getElementById('game-over-page'); //Game over screen
+let selectPlayerScreen = document.getElementById('select-player-page'); //Screen to select player
+let virusBtn = document.getElementById('virusPlayer');  //Selects the virus as player
+let bacteriaBtn = document.getElementById('bacteriaPlayer'); //Selects the bacteria as player
+let nanovirusBtn = document.getElementById('nanovirusPlayer'); //Selects the nanovirus as player
+let protozoaBtn = document.getElementById('protozoaPlayer'); //Selects the protozoa as player
+let gameoverImg = document.getElementById('virus-gameover'); //Game over image
+let winScreen = document.getElementById('win-page'); //Winning screen
+let highScoreList = document.getElementById('highScoreTable'); //High score list in the HTML
+let highScoreScreen = document.getElementById('high-score-page'); //High score screen
 //Variables
 let pickedPathogen = null;
 let mainPlayer = 0;
@@ -82,7 +82,7 @@ let bossPainAudio = new Audio('./audio/bossPainAudio.wav');
 const mycanvas = document.getElementById('my-canvas');
 let ctx = mycanvas.getContext('2d');
 //Classes
-class Wall {
+class Wall { //Creates the different walls inside the game board
     constructor(x, y, width, height, color, gate){
         this.x = x;
         this.y = y;
@@ -97,7 +97,7 @@ class Wall {
         ctx.strokeRect(this.x, this.y, this.width, this.height);
     };
 };
-class Collectable {
+class Collectable { //Creates the different collectables inside the game board
     constructor(img, x, y, width, height) {
         this.img = img;
         this.x = x;
@@ -106,12 +106,12 @@ class Collectable {
         this.height = height;
         this.collected = false;
         this.notScored = true;
-        this.mutate = false;
+        this.mutate = false; //If it's a special collectable
     };
     draw(){
         ctx.drawImage(this.img, this.x, this.y, this.width, this.height);
     };
-    checkcollision(object) {
+    checkcollision(object) { //Checks the collision with the collectable
         return (
           this.x < object.x + object.width &&
           this.x + this.width > object.x &&
@@ -119,7 +119,7 @@ class Collectable {
           this.y + this.height > object.y
         );
     };
-    collect(object){
+    collect(object){ //Collects the collectable
         if (this.checkcollision(object)) {
             this.collected = true;
             ctx.clearRect(this.x, this.y, this.width, this.height);
@@ -128,7 +128,7 @@ class Collectable {
             this.mutate = true;
         };
     };
-    updateScore(object, score){
+    updateScore(object, score){ //Updates the score of the player
         if ((this.checkcollision(object)) && (this.notScored === true)){
             points += score;
             pointsRestart += score;
@@ -138,7 +138,7 @@ class Collectable {
         };
     };
 };
-class Player extends Collectable {
+class Player extends Collectable { //Creates the main player
     constructor(img, x, y){
         super(img, x, y);
         this.width = 36;
@@ -146,7 +146,7 @@ class Player extends Collectable {
         this.speedX = 4;
         this.speedY = 4;
     };
-    moveRight(objects) {
+    moveRight(objects) { //Moves right the player checking if there are obstacles
         this.x += this.speedX;
         objects.forEach(object => {
             if (this.checkcollision(object)) {
@@ -156,7 +156,7 @@ class Player extends Collectable {
             };
         });
       };
-    moveLeft(objects) {
+    moveLeft(objects) { //Moves left the player checking if there are obstacles
         this.x -= this.speedX;
         objects.forEach(object => {
             if (this.checkcollision(object)) {
@@ -166,20 +166,20 @@ class Player extends Collectable {
             };
         });
     };
-    moveUp(objects) {
+    moveUp(objects) { //Moves up the player checking if there are obstacles
         this.y -= this.speedY;
         objects.forEach(object => {
             if (this.checkcollision(object)) this.y += this.speedY;
         });
     };
-    moveDown(objects) {
+    moveDown(objects) { //Moves down the player checking if there are obstacles
         this.y += this.speedY;
         objects.forEach(object => {
             if (this.checkcollision(object)) this.y -= this.speedY;
         });
     };
 };
-class Enemy extends Player {
+class Enemy extends Player { //Creates the enemies
     constructor(img, x, y){
         super(img, x, y);
         this.width = 36;
@@ -194,7 +194,7 @@ class Enemy extends Player {
         this.scared = false;
         this.dead = false;
     };
-    updateAngleX(player, objects){
+    updateAngleX(player, objects){ //Pathfinding algorithm in x axis
         this.dx = player.x - this.x;
         this.dy = player.y - this.y;
         this.distance = Math.sqrt((this.dx*this.dx) + (this.dy*this.dy));
@@ -214,7 +214,7 @@ class Enemy extends Player {
             };
         });
     };
-    updateAngleY(player, objects){
+    updateAngleY(player, objects){ //Pathfinding algorithm in y axis
         this.dx = player.x - this.x;
         this.dy = player.y - this.y;
         this.distance = Math.sqrt((this.dx*this.dx) + (this.dy*this.dy));
@@ -234,7 +234,7 @@ class Enemy extends Player {
             };
         });
     };
-    updateAngleScaredX(player, objects){
+    updateAngleScaredX(player, objects){ //Pathfinding algorithm in x axis when the enemy is scared of the player
         this.dx = this.x - player.x;
         this.dy = this.y - player.y;
         this.distance = Math.sqrt((this.dx*this.dx) + (this.dy*this.dy));
@@ -254,7 +254,7 @@ class Enemy extends Player {
             };
         });
     };
-    updateAngleScaredY(player, objects){
+    updateAngleScaredY(player, objects){ //Pathfinding algorithm in y axis when the enemy is scared of the player
         this.dx = this.x - player.x;
         this.dy = this.y - player.y;
         this.distance = Math.sqrt((this.dx*this.dx) + (this.dy*this.dy));
@@ -274,15 +274,15 @@ class Enemy extends Player {
             };
         });
     };
-    scare(player, objects){
+    scare(player, objects){ //When enemies are scared
         this.updateAngleScaredX(player, objects);
         this.updateAngleScaredY(player, objects);
     };
-    transportHome (){
+    transportHome (){ //Gets the enemy home
         this.x = 480;
         this.y = 290;
     };
-    death(objects){
+    death(objects){ //When the enemy dies
         outOfBox = new Player("", 480, 224);
         if (this.x > 481 || this.x < 479 || this.y > 225 || this.y < 223){
             this.img = vaccineImgDeath;
@@ -308,7 +308,7 @@ class Enemy extends Player {
     };
 };
 //Boss level classes
-class PlayerBoss extends Collectable {
+class PlayerBoss extends Collectable { //Creates main player in the boss level
     constructor(img, x, y){
         super(img, x, y);
         this.width = 40;
@@ -316,33 +316,33 @@ class PlayerBoss extends Collectable {
         this.speedX = 15;
         this.speedY = 15;
     };
-    moveRight(objects) {
+    moveRight(objects) { //Moves right the player
         this.x += this.speedX;
         objects.forEach(object => {
             if (this.checkcollision(object)) this.x -= this.speedX;
         });
       };
-    moveLeft() {
+    moveLeft() { //Moves left the player
         this.x -= this.speedX;
         if (this.x <= 0) this.x += this.speedX;
     };
-    moveUp() {
+    moveUp() { //Moves up the player
         this.y -= this.speedY;
         if (this.y <= 400) this.y += this.speedY;
     };
-    moveDown() {
+    moveDown() { //Moves down the player
         this.y += this.speedY;
         if (this.y >= 670) this.y -= this.speedY;
     };
 };
-class Shoot extends Collectable{
+class Shoot extends Collectable{ //Creates the shoots from the player and boss
     constructor(img, x, y){
         super(img, x, y);
         this.width = 10;
         this.height = 10;
     };
 };
-class Boss extends Collectable {
+class Boss extends Collectable { //Creates the boss in the boss level
     constructor(img, x, y){
         super(img, x, y);
         this.width = 240;
@@ -461,139 +461,9 @@ const specialCollects = [
     new Collectable(mutationImg, 950, 500, 30, 30)
 ];
 const collects = [
-    new Collectable(humanImg, 30, 22, 15, 20),
-    new Collectable(humanImg, 60, 22, 15, 20),
-    new Collectable(humanImg, 90, 22, 15, 20),
-    new Collectable(humanImg, 120, 22, 15, 20),
-    new Collectable(humanImg, 150, 22, 15, 20),
-    new Collectable(humanImg, 180, 22, 15, 20),
-    new Collectable(humanImg, 210, 22, 15, 20),
-    new Collectable(humanImg, 240, 22, 15, 20),
-    new Collectable(humanImg, 270, 22, 15, 20),
-    new Collectable(humanImg, 300, 22, 15, 20),
-    new Collectable(humanImg, 330, 22, 15, 20),
-    new Collectable(humanImg, 360, 22, 15, 20),
-    new Collectable(humanImg, 390, 22, 15, 20),
-    new Collectable(humanImg, 420, 22, 15, 20),
-    new Collectable(humanImg, 450, 22, 15, 20),
-    new Collectable(humanImg, 540, 22, 15, 20),
-    new Collectable(humanImg, 570, 22, 15, 20),
-    new Collectable(humanImg, 600, 22, 15, 20),
-    new Collectable(humanImg, 630, 22, 15, 20),
-    new Collectable(humanImg, 660, 22, 15, 20),
-    new Collectable(humanImg, 690, 22, 15, 20),
-    new Collectable(humanImg, 720, 22, 15, 20),
-    new Collectable(humanImg, 750, 22, 15, 20),
-    new Collectable(humanImg, 780, 22, 15, 20),
-    new Collectable(humanImg, 810, 22, 15, 20),
-    new Collectable(humanImg, 840, 22, 15, 20),
-    new Collectable(humanImg, 870, 22, 15, 20),
-    new Collectable(humanImg, 900, 22, 15, 20),
-    new Collectable(humanImg, 930, 22, 15, 20),
-    new Collectable(humanImg, 960, 22, 15, 20),
-    new Collectable(humanImg, 30, 102, 15, 20),
-    new Collectable(humanImg, 60, 102, 15, 20),
-    new Collectable(humanImg, 90, 102, 15, 20),
-    new Collectable(humanImg, 120, 102, 15, 20),
-    new Collectable(humanImg, 150, 102, 15, 20),
-    new Collectable(humanImg, 180, 102, 15, 20),
-    new Collectable(humanImg, 210, 102, 15, 20),
-    new Collectable(humanImg, 240, 102, 15, 20),
-    new Collectable(humanImg, 270, 102, 15, 20),
-    new Collectable(humanImg, 300, 102, 15, 20),
-    new Collectable(humanImg, 330, 102, 15, 20),
-    new Collectable(humanImg, 360, 102, 15, 20),
-    new Collectable(humanImg, 390, 102, 15, 20),
-    new Collectable(humanImg, 420, 102, 15, 20),
-    new Collectable(humanImg, 450, 102, 15, 20),
-    new Collectable(humanImg, 480, 102, 15, 20),
-    new Collectable(humanImg, 510, 102, 15, 20),
-    new Collectable(humanImg, 540, 102, 15, 20),
-    new Collectable(humanImg, 570, 102, 15, 20),
-    new Collectable(humanImg, 600, 102, 15, 20),
-    new Collectable(humanImg, 630, 102, 15, 20),
-    new Collectable(humanImg, 660, 102, 15, 20),
-    new Collectable(humanImg, 690, 102, 15, 20),
-    new Collectable(humanImg, 720, 102, 15, 20),
-    new Collectable(humanImg, 750, 102, 15, 20),
-    new Collectable(humanImg, 780, 102, 15, 20),
-    new Collectable(humanImg, 810, 102, 15, 20),
-    new Collectable(humanImg, 840, 102, 15, 20),
-    new Collectable(humanImg, 870, 102, 15, 20),
-    new Collectable(humanImg, 900, 102, 15, 20),
-    new Collectable(humanImg, 930, 102, 15, 20),
-    new Collectable(humanImg, 960, 102, 15, 20),
-    new Collectable(humanImg, 30, 162, 15, 20),
-    new Collectable(humanImg, 60, 162, 15, 20),
-    new Collectable(humanImg, 90, 162, 15, 20),
-    new Collectable(humanImg, 120, 162, 15, 20),
-    new Collectable(humanImg, 150, 162, 15, 20),
-    new Collectable(humanImg, 180, 162, 15, 20),
-    new Collectable(humanImg, 210, 162, 15, 20),
-    new Collectable(humanImg, 330, 162, 15, 20),
-    new Collectable(humanImg, 360, 162, 15, 20),
-    new Collectable(humanImg, 390, 162, 15, 20),
-    new Collectable(humanImg, 420, 162, 15, 20),
-    new Collectable(humanImg, 570, 162, 15, 20),
-    new Collectable(humanImg, 600, 162, 15, 20),
-    new Collectable(humanImg, 630, 162, 15, 20),
-    new Collectable(humanImg, 660, 162, 15, 20),
-    new Collectable(humanImg, 780, 162, 15, 20),
-    new Collectable(humanImg, 810, 162, 15, 20),
-    new Collectable(humanImg, 840, 162, 15, 20),
-    new Collectable(humanImg, 870, 162, 15, 20),
-    new Collectable(humanImg, 900, 162, 15, 20),
-    new Collectable(humanImg, 930, 162, 15, 20),
-    new Collectable(humanImg, 960, 162, 15, 20),
-    new Collectable(humanImg, 30, 444, 15, 20),
-    new Collectable(humanImg, 60, 444, 15, 20),
-    new Collectable(humanImg, 90, 444, 15, 20),
-    new Collectable(humanImg, 120, 444, 15, 20),
-    new Collectable(humanImg, 150, 444, 15, 20),
-    new Collectable(humanImg, 180, 444, 15, 20),
-    new Collectable(humanImg, 210, 444, 15, 20),
-    new Collectable(humanImg, 240, 444, 15, 20),
-    new Collectable(humanImg, 270, 444, 15, 20),
-    new Collectable(humanImg, 300, 444, 15, 20),
-    new Collectable(humanImg, 330, 444, 15, 20),
-    new Collectable(humanImg, 360, 444, 15, 20),
-    new Collectable(humanImg, 390, 444, 15, 20),
-    new Collectable(humanImg, 420, 444, 15, 20),
-    new Collectable(humanImg, 570, 444, 15, 20),
-    new Collectable(humanImg, 600, 444, 15, 20),
-    new Collectable(humanImg, 630, 444, 15, 20),
-    new Collectable(humanImg, 660, 444, 15, 20),
-    new Collectable(humanImg, 690, 444, 15, 20),
-    new Collectable(humanImg, 720, 444, 15, 20),
-    new Collectable(humanImg, 750, 444, 15, 20),
-    new Collectable(humanImg, 780, 444, 15, 20),
-    new Collectable(humanImg, 810, 444, 15, 20),
-    new Collectable(humanImg, 840, 444, 15, 20),
-    new Collectable(humanImg, 870, 444, 15, 20),
-    new Collectable(humanImg, 900, 444, 15, 20),
-    new Collectable(humanImg, 930, 444, 15, 20),
-    new Collectable(humanImg, 960, 444, 15, 20),
     new Collectable(humanImg, 60, 502, 15, 20),
     new Collectable(humanImg, 90, 502, 15, 20),
     new Collectable(humanImg, 120, 502, 15, 20),
-    new Collectable(humanImg, 210, 502, 15, 20),
-    new Collectable(humanImg, 240, 502, 15, 20),
-    new Collectable(humanImg, 270, 502, 15, 20),
-    new Collectable(humanImg, 300, 502, 15, 20),
-    new Collectable(humanImg, 330, 502, 15, 20),
-    new Collectable(humanImg, 360, 502, 15, 20),
-    new Collectable(humanImg, 390, 502, 15, 20),
-    new Collectable(humanImg, 420, 502, 15, 20),
-    new Collectable(humanImg, 450, 502, 15, 20),
-    new Collectable(humanImg, 540, 502, 15, 20),
-    new Collectable(humanImg, 570, 502, 15, 20),
-    new Collectable(humanImg, 600, 502, 15, 20),
-    new Collectable(humanImg, 630, 502, 15, 20),
-    new Collectable(humanImg, 660, 502, 15, 20),
-    new Collectable(humanImg, 690, 502, 15, 20),
-    new Collectable(humanImg, 720, 502, 15, 20),
-    new Collectable(humanImg, 750, 502, 15, 20),
-    new Collectable(humanImg, 780, 502, 15, 20),
     new Collectable(humanImg, 870, 502, 15, 20),
     new Collectable(humanImg, 900, 502, 15, 20),
     new Collectable(humanImg, 930, 502, 15, 20),
@@ -619,38 +489,6 @@ const collects = [
     new Collectable(humanImg, 900, 594, 15, 20),
     new Collectable(humanImg, 930, 594, 15, 20),
     new Collectable(humanImg, 960, 594, 15, 20),
-    new Collectable(humanImg, 30, 654, 15, 20),
-    new Collectable(humanImg, 60, 654, 15, 20),
-    new Collectable(humanImg, 90, 654, 15, 20),
-    new Collectable(humanImg, 120, 654, 15, 20),
-    new Collectable(humanImg, 150, 654, 15, 20),
-    new Collectable(humanImg, 180, 654, 15, 20),
-    new Collectable(humanImg, 210, 654, 15, 20),
-    new Collectable(humanImg, 240, 654, 15, 20),
-    new Collectable(humanImg, 270, 654, 15, 20),
-    new Collectable(humanImg, 300, 654, 15, 20),
-    new Collectable(humanImg, 330, 654, 15, 20),
-    new Collectable(humanImg, 360, 654, 15, 20),
-    new Collectable(humanImg, 390, 654, 15, 20),
-    new Collectable(humanImg, 420, 654, 15, 20),
-    new Collectable(humanImg, 450, 654, 15, 20),
-    new Collectable(humanImg, 480, 654, 15, 20),
-    new Collectable(humanImg, 510, 654, 15, 20),
-    new Collectable(humanImg, 540, 654, 15, 20),
-    new Collectable(humanImg, 570, 654, 15, 20),
-    new Collectable(humanImg, 600, 654, 15, 20),
-    new Collectable(humanImg, 630, 654, 15, 20),
-    new Collectable(humanImg, 660, 654, 15, 20),
-    new Collectable(humanImg, 690, 654, 15, 20),
-    new Collectable(humanImg, 720, 654, 15, 20),
-    new Collectable(humanImg, 750, 654, 15, 20),
-    new Collectable(humanImg, 780, 654, 15, 20),
-    new Collectable(humanImg, 810, 654, 15, 20),
-    new Collectable(humanImg, 840, 654, 15, 20),
-    new Collectable(humanImg, 870, 654, 15, 20),
-    new Collectable(humanImg, 900, 654, 15, 20),
-    new Collectable(humanImg, 930, 654, 15, 20),
-    new Collectable(humanImg, 960, 654, 15, 20),
     new Collectable(humanImg, 210, 62, 15, 20),
     new Collectable(humanImg, 450, 62, 15, 20),
     new Collectable(humanImg, 540, 62, 15, 20),
@@ -674,6 +512,103 @@ const collects = [
     new Collectable(humanImg, 770, 360, 15, 20),
     new Collectable(humanImg, 770, 400, 15, 20)
 ];
+//Recursive functions to create some collectables
+function drawCollect1 (x){
+    if (x > 450){
+        return
+    };
+    collects.push(new Collectable(humanImg, x, 22, 15, 20));
+    return drawCollect1(x + 30);
+};
+function drawCollect2 (x){
+    if (x > 960){
+        return
+    };
+    collects.push(new Collectable(humanImg, x, 22, 15, 20));
+    return drawCollect2(x + 30);
+};
+function drawCollect3 (x){
+    if (x > 960){
+        return
+    };
+    collects.push(new Collectable(humanImg, x, 102, 15, 20));
+    return drawCollect3(x + 30);
+};
+function drawCollect4 (x){
+    if (x > 210){
+        return
+    };
+    collects.push(new Collectable(humanImg, x, 162, 15, 20));
+    return drawCollect4(x + 30);
+};
+function drawCollect5 (x){
+    if (x > 420){
+        return
+    };
+    collects.push(new Collectable(humanImg, x, 162, 15, 20));
+    return drawCollect5(x + 30);
+};
+function drawCollect6 (x){
+    if (x > 660){
+        return
+    };
+    collects.push(new Collectable(humanImg, x, 162, 15, 20));
+    return drawCollect6(x + 30);
+};
+function drawCollect7 (x){
+    if (x > 980){
+        return
+    };
+    collects.push(new Collectable(humanImg, x, 162, 15, 20));
+    return drawCollect7(x + 30);
+};
+function drawCollect8 (x){
+    if (x > 420){
+        return
+    };
+    collects.push(new Collectable(humanImg, x, 444, 15, 20));
+    return drawCollect8(x + 30);
+};
+function drawCollect9 (x){
+    if (x > 960){
+        return
+    };
+    collects.push(new Collectable(humanImg, x, 444, 15, 20));
+    return drawCollect9(x + 30);
+};
+function drawCollect10 (x){
+    if (x > 450){
+        return
+    };
+    collects.push(new Collectable(humanImg, x, 502, 15, 20));
+    return drawCollect10(x + 30);
+};
+function drawCollect11 (x){
+    if (x > 780){
+        return
+    };
+    collects.push(new Collectable(humanImg, x, 502, 15, 20));
+    return drawCollect11(x + 30);
+};
+function drawCollect12 (x){
+    if (x > 960){
+        return
+    };
+    collects.push(new Collectable(humanImg, x, 654, 15, 20));
+    return drawCollect12(x + 30);
+};
+drawCollect1(30);
+drawCollect2(540);
+drawCollect3(30);
+drawCollect4(30);
+drawCollect5(330);
+drawCollect6(570);
+drawCollect7(780);
+drawCollect8(30);
+drawCollect9(570);
+drawCollect10(210);
+drawCollect11(540);
+drawCollect12(30);
 // Highscores
 highScores = [
     {
@@ -696,23 +631,25 @@ if (intervalBossShoot){
 intervalBossShoot = setInterval(() => {
     shootingBoss.push(new Shoot(shootingVaccine, bossEnemy.x + 120, bossEnemy.y + 220));
 }, 400);
-//Run game
+//Listener to run game
 window.addEventListener('load', () => {
     startSplashScreen();
     //Event listeners
     playBtn.forEach(e => {
         e.addEventListener('click', () => {
+            //Clear the intervals if they were running
             clearInterval(intervalId);
             cancelAnimationFrame(intervalId);
             clearInterval(intervalBoss);
             cancelAnimationFrame(intervalBoss);
-            if (pickedPathogen === null) {
+            if (pickedPathogen === null) { //If no player is selected
                 alert('Please pick a pathogen!');
             } else {
-                gameScreen();
+                gameScreen(); //If it's selected starts the game
             };
         });
     });
+    //Listener to recognize the arrow keys to play and the space to shoot in the boss level
     document.addEventListener("keydown", (event) => {
         switch (event.keyCode) {
         case 38:
@@ -777,6 +714,7 @@ window.addEventListener('load', () => {
             };
         });
     });
+    //Buttons to choose the player
     virusBtn.addEventListener('click', () => {
         pickedPathogen = 'virusPl';
         playerSelectAudio.play();

@@ -1,6 +1,8 @@
+//Function when all lives are lost
 function losing(){
     gameOver = true;
     bossLevelAudio.pause();
+    //Calling the high scores function
     updateHighScores();
     highScoreScreen.style.display = 'block';
     mycanvas.style.display = 'none';

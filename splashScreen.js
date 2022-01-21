@@ -1,3 +1,4 @@
+//Function to show the start screen
 function startSplashScreen(){
     splashScreen.style.display = 'block';
     backgroundMusic.play();

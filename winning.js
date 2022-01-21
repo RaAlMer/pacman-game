@@ -1,11 +1,13 @@
+//Function called when the boss is defeated and the game won
 function winning(){
     cancelAnimationFrame(intervalBoss);
     clearInterval(intervalBoss);
     bossLevelAudio.pause();
+    //Calling the high score function
     updateHighScores();
     highScoreScreen.style.display = 'block';
     mycanvas.style.display = 'none';
-    //Restart variables
+    //Restart variables for another game
     specialCollects.forEach(specialCollect => {
         specialCollect.collected = false;
         specialCollect.notScored = true;

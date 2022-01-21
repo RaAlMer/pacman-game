@@ -1,3 +1,4 @@
+//Function to update the main board in the game
 function updateGameArea() {
     ctx.clearRect(0, 0, mycanvas.width, mycanvas.height);
     //Adding audio
@@ -6,20 +7,23 @@ function updateGameArea() {
     //Canvas definition
     ctx.fillStyle = "black";
     ctx.fillRect(0, 0, mycanvas.width, mycanvas.height);
+    //Adding the walls
     walls.forEach((wall) => {
         wall.draw();
     });
+    //Adding the collectables and special collectables
     specialCollects.forEach(specialCollect => {
         if (specialCollect.collected === false) specialCollect.draw();
         specialCollect.checkcollision(mainPlayer);
         specialCollect.collect(mainPlayer);
         specialCollect.updateScore(mainPlayer, 2000);
+        //If a special collectable is collected by the player
         if (specialCollect.mutate === true){
             enemies.forEach(enemy => {
                 enemy.scared = true;
             });
             ghostScaredAudio.play();
-            //Time in which enemies can be killed and run away
+            //Time in which enemies can be killed and run away (they're scared)
             setTimeout(() => {
                 enemies.forEach(enemy => {
                     enemy.scared = false;
@@ -34,7 +38,7 @@ function updateGameArea() {
         collect.collect(mainPlayer);
         collect.updateScore(mainPlayer, 50);
     });
-    //Points
+    //Points written on the canvas and the lives left
     ctx.fillStyle = "white";
     ctx.font = "24px 'Press Start 2P'"
     ctx.fillText(`HIGH SCORE`, 1030, 40);
@@ -42,7 +46,7 @@ function updateGameArea() {
     ctx.fillText("1UP", 1320, 40);
     ctx.fillText("LIVES", 1150, 120);
     ctx.fillText(lives, 1200, 160);
-    //Player
+    //Player drawing and moving checking collisions with the walls
     mainPlayer.draw();
     if(upArrow){
         mainPlayer.moveUp(walls);
@@ -56,12 +60,13 @@ function updateGameArea() {
     walls.forEach(wall => {
         mainPlayer.checkcollision(wall);
     });
-    //Enemies
+    //Enemies drawing, leaving home and moving checking collisions with the walls and pursuing player
     enemies.forEach(enemy => {
         enemy.draw();
         walls.forEach(wall => {
             enemy.checkcollision(wall);
         });
+        //Leaving home when an amount of points is obtained by the main player
         if (pointsRestart >= 1750 || enemies[0].home === false){
             if(enemies[0].home === true){
                 enemies[0].x = 480;
@@ -158,6 +163,7 @@ function updateGameArea() {
                 if (enemies[3].x <= 0) enemies[3].x = 975;
             };
         };
+        //Checking collision between enemies and the player if enemies are scared and they die
         if (mainPlayer.checkcollision(enemies[0])){
             if (enemies[0].scared === true) enemies[0].dead = true;
         };
@@ -170,6 +176,7 @@ function updateGameArea() {
         if (mainPlayer.checkcollision(enemies[3])){
             if (enemies[3].scared === true) enemies[3].dead = true;
         };
+        //If main player is hitten it loses one life until there are no lives left
         if (mainPlayer.checkcollision(enemy)){
             if (enemy.scared === false) {
                 losingLifeAudio.play();
@@ -189,10 +196,11 @@ function updateGameArea() {
                 };
             };
         };
+        //Checking collision between enemies
         for (let i = 0; i < enemies.length; i++){
             enemy.checkcollision(enemies[i]);
         };
-        //Boss level
+        //Going to boss level if an amount of points are earned
         if (points >= 18600){
             //Restart some variables
             upArrow = false;
@@ -204,7 +212,7 @@ function updateGameArea() {
             playerMovingAudio.pause();
             bossLevelAudio.play();
             bossLevelAudio.volume = 0.6;       
-            //Player
+            //Player in the boss level
             if (pickedPathogen === 'virusPl'){
                 mainPlayerBoss = new PlayerBoss(virusImg, 480, mycanvas.height - 100);
             } else if (pickedPathogen === 'bacteriaPl'){
@@ -214,9 +222,9 @@ function updateGameArea() {
             } else if (pickedPathogen === 'protozoaPl'){
                 mainPlayerBoss = new PlayerBoss(protozoaImg, 480, mycanvas.height - 100);
             };
-            //Enemies
+            //Boss enemy
             bossEnemy = new Boss(enemyDoctor, 340, 10);
-            //Interval
+            //Interval for the boss level
             if (intervalBoss) clearInterval(intervalBoss);
             clearInterval(intervalId);
             intervalBoss = setInterval(() => {

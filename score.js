@@ -1,3 +1,4 @@
+//Function to save the high score reached and ask for the name of the player
 function saveHighScore(index) {
     namePlayer = prompt("WHAT'S YOUR NAME PLAYER?");
     highScores.splice(index, 0 , {
@@ -6,6 +7,7 @@ function saveHighScore(index) {
     });
     highScores.pop();
 };
+//Function to update the high scores list
 function updateHighScores() {
     if (points >= highScores[0].score) {
         saveHighScore(0);

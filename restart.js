@@ -1,5 +1,6 @@
+//Function to restart the game
 function restart(){
-    // Values
+    // Values to choose player and declare enemies
     if (pickedPathogen === null) {
         alert('Please pick a pathogen!');
     } else {

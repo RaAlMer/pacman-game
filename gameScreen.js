@@ -1,6 +1,7 @@
+//Function to draw the main board screen
 function gameScreen(){
     ctx.clearRect(0, 0, mycanvas.width, mycanvas.height);
-    // Values
+    // Player declared
     if (pickedPathogen === 'virusPl'){
         mainPlayer = new Player(virusImg, 480, 495);
         gameoverImg.src = "../images/virus.png";
@@ -14,6 +15,7 @@ function gameScreen(){
         mainPlayer = new Player(protozoaImg, 480, 495);
         gameoverImg.src = "../images/protozoa.png";
     };
+    // Enemies declared
     enemies = [
         new Enemy(vaccineImg, 460, 290),
         new Enemy(vaccineImg, 400, 290),
